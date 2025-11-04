@@ -1,0 +1,80 @@
+<?php
+
+use App\Http\Controllers\ArtikelController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\LandingAdminController;
+use App\Http\Controllers\LandingController;
+use App\Http\Controllers\MerekController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SeoController;
+use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\SubServiceController;
+use App\Models\Landing;
+use Illuminate\Support\Facades\Route;
+
+Route::view('/', 'landingbaru.branda')->name('landing.index');
+Route::view('/programstudibaru', 'landingbaru.programstudi')->name('landing.index');
+Route::view('/jadwalbaru', 'landingbaru.jadwal')->name('landing.index');
+Route::view('/ormawa', 'landingbaru.ormawa')->name('landing.index');
+Route::view('/beasiswabaru', 'landingbaru.beasiswa')->name('landing.index');
+Route::view('/prestasibaru', 'landingbaru.prestasimahasiswa')->name('landing.index');
+Route::view('/kontakbaru', 'landingbaru.kontak')->name('landing.index');
+Route::view('/infopembayaran', 'landingbaru.pembayaran')->name('landing.index');
+Route::view('/transkrip', 'landingbaru.transkip')->name('landing.index');
+Route::view('/prestasibaru', 'landingbaru.prestasimahasiswa')->name('landing.index');
+Route::view('/detailprodi', 'landingbaru.detailprodi')->name('landing.index');
+Route::view('/detailormawa', 'landingbaru.detailormawa')->name('landing.index');
+Route::view('/detailbeasiswa', 'landingbaru.detailbeasiswa')->name('landing.index');
+Route::view('/detailprestasi', 'landingbaru.dertailprestasi')->name('landing.index');
+Route::view('/detailpengumuman', 'landingbaru.detailpengguman')->name('landing.index');
+Route::view('/detailberita', 'landingbaru.detailberita')->name('landing.index');
+Route::view('/detailgaleri', 'landingbaru.detailgaleri')->name('landing.index');
+// Pengumuman
+Route::view('/pengumumanbaru', 'landingbaru.pengumuman')->name('pengumuman.index');
+
+// Berita Kampus
+Route::view('/beritabaru', 'landingbaru.berita')->name('berita.index');
+
+// Kalender Akademik
+Route::view('/kalender-akademikbaru', 'landingbaru.kalender')->name('kalender.index');
+
+// Galeri
+Route::view('/galeribaru', 'landingbaru.galeri')->name('galeri.index');
+// Profil
+Route::view('/kampusbaru', 'landingbaru.kampus')->name('profil.index');
+
+Route::get('/artikel', [LandingController::class, 'artikel'])->name('artikel.index');
+Route::get('/produk/{id}', [LandingController::class, 'produkDetail'])->name('produk.detail');
+Route::get('/rental/{id}', [LandingController::class, 'rentalDetail'])->name('rental.detail');
+Route::get('/servis', [LandingController::class, 'servis'])->name('servis.index');
+Route::get('/produk', [LandingController::class, 'produk'])->name('produk.index');
+Route::get('/rental', [LandingController::class, 'rental'])->name('rental.index');
+Route::get('/artikel/{id}', [LandingController::class, 'artikelDetail'])->name('artikel.detail');
+Route::post('/contact/send', [LandingController::class, 'sendContact'])->name('landing.contact.send');
+Route::get('/dashboard', function () {
+    $landing = Landing::first();
+    return view('dashboard', compact('landing')); // kirim data ke view
+})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/services/{id}', [LandingController::class, 'serviceDetail'])->name('services.show');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/landing', [LandingAdminController::class, 'index'])->name('landing.index');
+    Route::post('/landing/save', [LandingAdminController::class, 'storeOrUpdate'])->name('landing.save');
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::resource('categories', CategoryController::class);
+    Route::resource('products', ProductController::class);
+    Route::resource('services', ServiceController::class);
+    Route::resource('artikels', ArtikelController::class);
+    Route::resource('merek', MerekController::class);
+    Route::resource('sub-services', SubServiceController::class);
+    Route::get('seo', [SeoController::class, 'index'])->name('seo.index');
+    Route::get('seo/create', [SeoController::class, 'form'])->name('seo.create');
+    Route::get('seo/{seo}/edit', [SeoController::class, 'form'])->name('seo.edit');
+    Route::post('/seo/save/{seo?}', [SeoController::class, 'save'])->name('seo.save');
+    Route::delete('seo/{seo}', [SeoController::class, 'destroy'])->name('seo.destroy');
+});
+
+require __DIR__ . '/auth.php';
