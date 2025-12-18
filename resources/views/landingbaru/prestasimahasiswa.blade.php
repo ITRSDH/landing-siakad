@@ -27,10 +27,7 @@
     <article class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden hover:shadow-md transition"
              data-category="{{ strtolower($item->tingkat ?? $item->level ?? 'kampus') }}"
              data-name="{{ strtolower($item->nama_mahasiswa ?? $item->student_name ?? 'mahasiswa') }}">
-      {{-- <img src="{{ asset($item->gambar ?? $item->image ?? 'images/default-achievement.jpg') }}" 
-           alt="{{ $item->judul_prestasi ?? $item->title ?? 'Prestasi' }}" 
-           class="w-full h-40 object-cover"> --}}
-      <img src="https://picsum.photos/320/200?random={{ $item->id }}" 
+      <img src="{{ $item->gambar ? config('app.api_storage') . $item->gambar : 'https://picsum.photos/600/338?random=' . $item->id }}" 
            alt="{{ $item->judul_prestasi ?? $item->title ?? 'Prestasi' }}" 
            class="w-full h-40 object-cover">
       <div class="p-6">

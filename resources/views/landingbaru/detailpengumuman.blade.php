@@ -42,7 +42,7 @@
           </div>
 
           <div class="text-center mt-8">
-              <a href="{{ route('pengumuman.index') }}"
+              <a href="{{ route('pengumumans.index') }}"
                  class="inline-block bg-yellow-400 text-[#003366] font-semibold px-8 py-3 rounded-full shadow hover:bg-yellow-500 hover:scale-105 transform transition">
                   Kembali ke Daftar Pengumuman
               </a>

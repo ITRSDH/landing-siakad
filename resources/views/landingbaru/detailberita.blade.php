@@ -3,8 +3,22 @@
 @section('content')
 
 <!-- Hero Detail Berita -->
+@php
+    $heroGambar = $berita->gambar ?? $berita->image ?? 'https://picsum.photos/1600/500';
+    if ($heroGambar && $heroGambar !== 'https://picsum.photos/1600/500') {
+        if (str_starts_with($heroGambar, 'http')) {
+            $heroUrl = $heroGambar;
+        } elseif (str_contains($heroGambar, '/')) {
+            $heroUrl = config('app.api_storage') . ltrim($heroGambar, '/');
+        } else {
+            $heroUrl = asset('storage/' . $heroGambar);
+        }
+    } else {
+        $heroUrl = $heroGambar;
+    }
+@endphp
 <section class="relative bg-cover bg-center text-white py-20 md:py-28"
-    style="background-image: url('{{ asset($berita->gambar ?? $berita->image ?? 'https://picsum.photos/1600/500') }}');">
+    style="background-image: url('{{ $heroUrl }}');">
     
     <div class="absolute inset-0 bg-blue-900/70"></div>
 
@@ -40,15 +54,30 @@
                 </span>
             </div>
 
-            {{-- @if($berita->gambar ?? $berita->image)
-                <img src="{{ asset($berita->gambar ?? $berita->image) }}" 
+            @if($berita->gambar ?? $berita->image)
+                @php
+                    $gambarPath = $berita->gambar ?? $berita->image;
+                    // Jika path sudah berupa URL lengkap (dari API)
+                    if (str_starts_with($gambarPath, 'http')) {
+                        $gambarUrl = $gambarPath;
+                    } 
+                    // Jika path dari API server (relative)
+                    elseif (str_contains($gambarPath, '/')) {
+                        $gambarUrl = config('app.api_storage') . ltrim($gambarPath, '/');
+                    } 
+                    // Jika filename saja (local storage)
+                    else {
+                        $gambarUrl = asset('storage/' . $gambarPath);
+                    }
+                @endphp
+                <img src="{{ $gambarUrl }}" 
                      alt="{{ $berita->judul ?? $berita->title ?? 'Berita' }}" 
                      class="w-full h-64 object-cover rounded-lg mb-6">
-            @endif --}}
+            @endif
 
-            <img src="https://picsum.photos/960/540?random={{ $berita->id }}" 
+            {{-- <img src="https://picsum.photos/960/540?random={{ $berita->id }}" 
                      alt="{{ $berita->judul ?? $berita->title ?? 'Berita' }}" 
-                     class="w-full h-64 object-cover rounded-lg mb-6">
+                     class="w-full h-64 object-cover rounded-lg mb-6"> --}}
 
             <div class="prose max-w-full text-gray-700 mb-6">
                 {!! $berita->isi ?? $berita->content ?? 'Konten tidak tersedia' !!}

@@ -13,10 +13,13 @@ use App\Models\Prestasi;
 use App\Models\ProfilKampus;
 use App\Services\BeasiswaApiService;
 use App\Services\BeritaApiService;
+use App\Services\FaqApiService;
 use App\Services\GaleriApiService;
+use App\Services\LandingApiService;
 use App\Services\OrmawaApiService;
 use App\Services\PengumumanApiService;
 use App\Services\PrestasiApiService;
+use App\Services\ProdiApiService;
 use App\Services\ProfilApiService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -24,22 +27,105 @@ use Illuminate\Support\Facades\Log;
 
 class BerandaController extends Controller
 {
-    public function index()
+    public function index(GaleriApiService $galeriService, BeritaApiService $beritaService, PengumumanApiService $pengumumanService, LandingApiService $landingService, FaqApiService $faqService, ProdiApiService $prodiService)
     {
-        // Ambil 6 galeri terbaru untuk ditampilkan di beranda
-        $galeris = Galeri::orderBy('created_at', 'desc')->take(6)->get();
-       $faqs = Faq::latest()->get();
-         $beritas = Berita::latest()->take(5)->get();
+        // === GALERI: API first, database fallback ===
+        $apiGaleris = $galeriService->getAllGaleri();
+        if ($apiGaleris !== null && isset($apiGaleris['items'])) {
+            $galeris = $apiGaleris['items']->take(6);
+            Log::info('Using API data for Galeri in homepage');
+        } else {
+            Log::info('Using database fallback for Galeri in homepage');
+            $galeris = Galeri::orderBy('created_at', 'desc')->take(6)->get();
+        }
+
+        // === FAQ: Database only (belum ada API service) ===
+        $apiFaqs = $faqService->getAllFaq();
+        if ($apiFaqs !== null) {
+            $faqs = $apiFaqs;
+            Log::info('Using API data for FAQ in homepage');
+        } else {
+            Log::info('Using database fallback for FAQ in homepage');
+            $faqs = Faq::latest()->get();
+        }
+
+        // === BERITA: API first, database fallback ===
+        $apiBerita = $beritaService->getAllBerita();
+        if ($apiBerita !== null && isset($apiBerita['items'])) {
+            $beritas = collect($apiBerita['items'])->take(5);
+            Log::info('Using API data for Berita in homepage');
+        } else {
+            Log::info('Using database fallback for Berita in homepage');
+            $beritas = Berita::latest()->take(5)->get();
+        }
+
         $utama = $beritas->first();
         $lainnya = $beritas->skip(1);
-        $pengumumen = Pengumuman::latest()->take(5)->get();
-        $hero = LandingContent::first(); 
-        return view('landingbaru.branda', compact('galeris','faqs', 'utama', 'lainnya', 'pengumumen', 'hero'));
+
+        // === PENGUMUMAN: API first, database fallback ===
+        $apiPengumuman = $pengumumanService->getAllPengumuman();
+        if ($apiPengumuman !== null && isset($apiPengumuman['items'])) {
+            $pengumumen = collect($apiPengumuman['items'])->take(5);
+            Log::info('Using API data for Pengumuman in homepage');
+        } else {
+            Log::info('Using database fallback for Pengumuman in homepage');
+            $pengumumen = Pengumuman::latest()->take(5)->get();
+        }
+
+        // === HERO/LANDING CONTENT: API first, database fallback ===
+        $apiHero = $landingService->getActiveLandingKampus();
+        if ($apiHero !== null) {
+            $hero = $apiHero;
+            Log::info('Using API data for Hero content in homepage', [
+                'hero_title' => $apiHero->hero_title ?? 'N/A',
+                'hero_subtitle' => $apiHero->hero_subtitle ?? 'N/A',
+                'hero_background' => $apiHero->hero_background ?? 'N/A',
+            ]);
+        } else {
+            Log::info('Using database fallback for Hero content in homepage');
+            $hero = LandingContent::first();
+        }
+
+        // PRODI/LANDING CONTENT: API first, database fallback
+        $apiProdi = $prodiService->getAllProdi();
+        if ($apiProdi !== null) {
+            $prodis = is_array($apiProdi) ? collect($apiProdi) : $apiProdi;
+            Log::info('Using API data for Prodi in homepage', [
+                'prodi_count' => $prodis->count(),
+            ]);
+        } else {
+            Log::info('Using database fallback for Prodi in homepage');
+            // $prodis = Prodi::all();
+        }
+
+        return view('landingbaru.branda', compact('galeris', 'faqs', 'utama', 'lainnya', 'pengumumen', 'hero', 'prodis'));
     }
 
-    public function programStudi()
+    public function programStudi(ProdiApiService $prodiService)
     {
-        return view('landingbaru.programstudi');
+        $prodis = null;
+        $apiResponse = $prodiService->getAllProdi();
+
+        if ($apiResponse !== null) {
+            // Response dari API adalah array langsung: [{id, nama_prodi, prestasi: [...]}, ...]
+            if (is_array($apiResponse)) {
+                $prodis = collect($apiResponse);
+            }
+
+            if ($prodis && $prodis->count() > 0) {
+                Log::info('Using API data for Program Studi: ' . $prodis->count() . ' items');
+            } else {
+                Log::warning('API response empty for Program Studi');
+                $prodis = null;
+            }
+        }
+
+        if ($prodis === null) {
+            Log::info('Using database fallback for Program Studi in homepage');
+            // $prodis = Prodi::all();
+        }
+
+        return view('landingbaru.programstudi', compact('prodis'));
     }
 
     public function jadwal()
@@ -49,35 +135,51 @@ class BerandaController extends Controller
 
     public function ormawa(OrmawaApiService $ormawaService)
     {
-        // Coba ambil data dari API terlebih dahulu
-        $apiData = $ormawaService->getAllOrmawa();
-        
-        if ($apiData !== null) {
-            // Jika API berhasil, gunakan data dari API dengan pagination manual
-            $perPage = 9;
-            $currentPage = request()->get('page', 1);
-            $total = $apiData->count();
-            $offset = ($currentPage - 1) * $perPage;
-            $items = $apiData->slice($offset, $perPage)->values();
-            
-            // Buat paginator manual
-            $ormawas = new \Illuminate\Pagination\LengthAwarePaginator(
-                $items,
-                $total,
-                $perPage,
-                $currentPage,
-                [
-                    'path' => request()->url(),
+        $currentPage = request()->get('page', 1);
+        $apiData = $ormawaService->getAllOrmawa($currentPage);
+
+        if ($apiData !== null && isset($apiData['items'])) {
+            // API berhasil dengan pagination
+            if (isset($apiData['pagination']) && $apiData['pagination'] !== null) {
+                // Gunakan pagination dari API
+                $pagination = $apiData['pagination'];
+                $ormawas = new \Illuminate\Pagination\LengthAwarePaginator($apiData['items']->values(), $pagination['total'], $pagination['per_page'], $currentPage, [
+                    'path' => route('landing.ormawa'),
                     'pageName' => 'page',
-                ]
-            );
-            
-            return view('landingbaru.ormawa', compact('ormawas'));
+                    'query' => request()->query(),
+                ]);
+
+                Log::info('Using API Ormawa with pagination', [
+                    'current_page' => $currentPage,
+                    'total' => $pagination['total'],
+                    'per_page' => $pagination['per_page'],
+                    'items_count' => $apiData['items']->count(),
+                ]);
+            } else {
+                // API berhasil tapi tanpa pagination, buat manual
+                $perPage = 9;
+                $total = $apiData['items']->count();
+                $offset = ($currentPage - 1) * $perPage;
+                $items = $apiData['items']->slice($offset, $perPage)->values();
+
+                $ormawas = new \Illuminate\Pagination\LengthAwarePaginator($items, $total, $perPage, $currentPage, [
+                    'path' => route('landing.ormawa'),
+                    'pageName' => 'page',
+                ]);
+
+                Log::info('Using API Ormawa with manual pagination');
+            }
+
+            // Hitung kategori unik dari semua item (bukan hanya halaman saat ini)
+            $kategoriList = $apiData['items']->pluck('kategori', 'kategori')->keys()->filter()->unique()->values()->toArray();
+
+            return view('landingbaru.ormawa', compact('ormawas', 'kategoriList'));
         } else {
             // Fallback ke database jika API gagal
             Log::info('Using database fallback for Ormawa data');
             $ormawas = Ormawa::latest()->paginate(9);
-            return view('landingbaru.ormawa', compact('ormawas'));
+            $kategoriList = Ormawa::distinct()->pluck('kategori')->filter()->toArray();
+            return view('landingbaru.ormawa', compact('ormawas', 'kategoriList'));
         }
     }
 
@@ -86,7 +188,7 @@ class BerandaController extends Controller
     {
         // Coba ambil data dari API terlebih dahulu
         $apiData = $ormawaService->getOrmawaById($id);
-        
+
         if ($apiData !== null) {
             // Jika API berhasil, gunakan data dari API
             return view('landingbaru.detailormawa', ['ormawa' => $apiData]);
@@ -98,28 +200,42 @@ class BerandaController extends Controller
         }
     }
 
-   public function beasiswa(BeasiswaApiService $beasiswaService)
+    public function beasiswa(BeasiswaApiService $beasiswaService)
     {
-        $apiData = $beasiswaService->getAllBeasiswa();
-         if ($apiData !== null) {
-            // Jika API berhasil, gunakan data dari API dengan pagination manual
-            $perPage = 9;
-            $currentPage = request()->get('page', 1);
-            $total = $apiData->count();
-            $offset = ($currentPage - 1) * $perPage;
-            $items = $apiData->slice($offset, $perPage)->values();
-            
-            // Buat paginator manual
-            $beasiswas = new \Illuminate\Pagination\LengthAwarePaginator(
-                $items,
-                $total,
-                $perPage,
-                $currentPage,
-                [
-                    'path' => request()->url(),
+        $currentPage = request()->get('page', 1);
+        $apiData = $beasiswaService->getAllBeasiswa($currentPage);
+
+        if ($apiData !== null && isset($apiData['items'])) {
+            // API berhasil dengan pagination
+            if (isset($apiData['pagination']) && $apiData['pagination'] !== null) {
+                // Gunakan pagination dari API
+                $pagination = $apiData['pagination'];
+                $beasiswas = new \Illuminate\Pagination\LengthAwarePaginator($apiData['items']->values(), $pagination['total'], $pagination['per_page'], $currentPage, [
+                    'path' => route('landing.beasiswa'),
                     'pageName' => 'page',
-                ]
-            );
+                    'query' => request()->query(),
+                ]);
+
+                Log::info('Using API Beasiswa with pagination', [
+                    'current_page' => $currentPage,
+                    'total' => $pagination['total'],
+                    'per_page' => $pagination['per_page'],
+                    'items_count' => $apiData['items']->count(),
+                ]);
+            } else {
+                // API berhasil tapi tanpa pagination, buat manual
+                $perPage = 9;
+                $total = $apiData['items']->count();
+                $offset = ($currentPage - 1) * $perPage;
+                $items = $apiData['items']->slice($offset, $perPage)->values();
+
+                $prestasis = new \Illuminate\Pagination\LengthAwarePaginator($items, $total, $perPage, $currentPage, [
+                    'path' => route('landing.beasiswa'),
+                    'pageName' => 'page',
+                ]);
+
+                Log::info('Using API Beasiswa with manual pagination');
+            }
 
             return view('landingbaru.beasiswa', compact('beasiswas'));
         } else {
@@ -145,26 +261,40 @@ class BerandaController extends Controller
 
     public function prestasi(PrestasiApiService $prestasiService)
     {
-        $apiData = $prestasiService->getAllPrestasi();
-         if ($apiData !== null) {
-            // Jika API berhasil, gunakan data dari API dengan pagination manual
-            $perPage = 9;
-            $currentPage = request()->get('page', 1);
-            $total = $apiData->count();
-            $offset = ($currentPage - 1) * $perPage;
-            $items = $apiData->slice($offset, $perPage)->values();
-            
-            // Buat paginator manual
-            $prestasis = new \Illuminate\Pagination\LengthAwarePaginator(
-                $items,
-                $total,
-                $perPage,
-                $currentPage,
-                [
-                    'path' => request()->url(),
+        $currentPage = request()->get('page', 1);
+        $apiData = $prestasiService->getAllPrestasi($currentPage);
+
+        if ($apiData !== null && isset($apiData['items'])) {
+            // API berhasil dengan pagination
+            if (isset($apiData['pagination']) && $apiData['pagination'] !== null) {
+                // Gunakan pagination dari API
+                $pagination = $apiData['pagination'];
+                $prestasis = new \Illuminate\Pagination\LengthAwarePaginator($apiData['items']->values(), $pagination['total'], $pagination['per_page'], $currentPage, [
+                    'path' => route('landing.prestasi'),
                     'pageName' => 'page',
-                ]
-            );
+                    'query' => request()->query(),
+                ]);
+
+                Log::info('Using API Prestasi with pagination', [
+                    'current_page' => $currentPage,
+                    'total' => $pagination['total'],
+                    'per_page' => $pagination['per_page'],
+                    'items_count' => $apiData['items']->count(),
+                ]);
+            } else {
+                // API berhasil tapi tanpa pagination, buat manual
+                $perPage = 9;
+                $total = $apiData['items']->count();
+                $offset = ($currentPage - 1) * $perPage;
+                $items = $apiData['items']->slice($offset, $perPage)->values();
+
+                $prestasis = new \Illuminate\Pagination\LengthAwarePaginator($items, $total, $perPage, $currentPage, [
+                    'path' => route('landing.prestasi'),
+                    'pageName' => 'page',
+                ]);
+
+                Log::info('Using API Prestasi with manual pagination');
+            }
 
             return view('landingbaru.prestasimahasiswa', compact('prestasis'));
         } else {
@@ -203,87 +333,83 @@ class BerandaController extends Controller
         return view('landingbaru.transkip');
     }
 
-    public function detailProdi()
+    public function detailProdi($id, ProdiApiService $prodiService)
     {
-        return view('landingbaru.detailprodi');
+        $prodi = null;
+        $prestasi = null;
+        $apiResponse = $prodiService->getProdiById($id);
+
+        if ($apiResponse !== null) {
+            // Response structure dari API: {prodi: {...}, prestasi: [...]}
+            if (is_array($apiResponse)) {
+                $prodi = $apiResponse['prodi'] ?? null;
+                $prestasi = collect($apiResponse['prestasi'] ?? []);
+            } elseif (is_object($apiResponse)) {
+                $prodi = $apiResponse->prodi ?? null;
+                $prestasi = collect($apiResponse->prestasi ?? []);
+            }
+
+            if ($prodi) {
+                Log::info('Using API data for Prodi detail, ID: ' . $id);
+            } else {
+                Log::warning('API response missing prodi field for ID: ' . $id);
+            }
+        }
+
+        if ($prodi === null) {
+            Log::info('Using database fallback for Prodi detail, ID: ' . $id);
+            // $prodi = Prodi::findOrFail($id);
+        }
+
+        return view('landingbaru.detailprodi', compact('prodi', 'prestasi'));
     }
-   
+
     public function pengumuman(Request $request, PengumumanApiService $pengumumanService)
     {
-        // Coba ambil data dari API terlebih dahulu
-        $apiData = $pengumumanService->getAllPengumuman();
-        
-        if ($apiData !== null) {
-            // Filter API data berdasarkan request
-            $filteredData = $apiData;
-            
-            // Filter pencarian
-            if ($request->filled('q')) {
-                $searchTerm = strtolower($request->q);
-                $filteredData = $filteredData->filter(function($item) use ($searchTerm) {
-                    $judul = strtolower($item->judul ?? $item->title ?? '');
-                    $isi = strtolower($item->isi ?? $item->content ?? '');
-                    return str_contains($judul, $searchTerm) || str_contains($isi, $searchTerm);
-                });
-            }
-            
-            // Filter kategori
-            if ($request->filled('kategori') && $request->kategori != 'Semua Kategori') {
-                $filteredData = $filteredData->filter(function($item) use ($request) {
-                    return ($item->kategori ?? $item->category ?? '') == $request->kategori;
-                });
-            }
-            
-            // Pagination manual untuk API data
-            $perPage = 6;
-            $currentPage = request()->get('page', 1);
-            $total = $filteredData->count();
-            $offset = ($currentPage - 1) * $perPage;
-            $items = $filteredData->slice($offset, $perPage)->values();
-            
-            // Buat paginator manual
-            $pengumuman = new \Illuminate\Pagination\LengthAwarePaginator(
-                $items,
-                $total,
-                $perPage,
-                $currentPage,
-                [
-                    'path' => request()->url(),
+        $currentPage = request()->get('page', 1);
+        $apiData = $pengumumanService->getAllPengumuman($currentPage);
+
+        if ($apiData !== null && isset($apiData['items'])) {
+            // API berhasil dengan pagination
+            if (isset($apiData['pagination']) && $apiData['pagination'] !== null) {
+                // Gunakan pagination dari API
+                $pagination = $apiData['pagination'];
+                $pengumuman = new \Illuminate\Pagination\LengthAwarePaginator($apiData['items']->values(), $pagination['total'], $pagination['per_page'], $currentPage, [
+                    'path' => route('pengumumans.index'),
                     'pageName' => 'page',
-                ]
-            );
-            
-            // Ambil kategori dari API data untuk filter sidebar
-            $kategoriList = $apiData->pluck('kategori')
-                ->merge($apiData->pluck('category'))
-                ->filter()
-                ->unique()
-                ->values();
-                
+                    'query' => request()->query(),
+                ]);
+
+                Log::info('Using API Pengumuman with pagination', [
+                    'current_page' => $currentPage,
+                    'total' => $pagination['total'],
+                    'per_page' => $pagination['per_page'],
+                    'items_count' => $apiData['items']->count(),
+                ]);
+            } else {
+                // API berhasil tapi tanpa pagination, buat manual
+                $perPage = 9;
+                $total = $apiData['items']->count();
+                $offset = ($currentPage - 1) * $perPage;
+                $items = $apiData['items']->slice($offset, $perPage)->values();
+
+                $pengumuman = new \Illuminate\Pagination\LengthAwarePaginator($items, $total, $perPage, $currentPage, [
+                    'path' => route('pengumumans.index'),
+                    'pageName' => 'page',
+                ]);
+
+                Log::info('Using API Pengumuman with manual pagination');
+            }
+
+            // Hitung kategori unik dari semua item (bukan hanya halaman saat ini)
+            $kategoriList = $apiData['items']->pluck('kategori', 'kategori')->keys()->filter()->unique()->values()->toArray();
+
             return view('landingbaru.pengumuman', compact('pengumuman', 'kategoriList'));
         } else {
             // Fallback ke database jika API gagal
             Log::info('Using database fallback for Pengumuman data');
-            
-            $query = Pengumuman::query();
-
-            // Filter pencarian
-            if ($request->filled('q')) {
-                $query->where('judul', 'like', '%' . $request->q . '%');
-            }
-
-            // Filter kategori
-            if ($request->filled('kategori') && $request->kategori != 'Semua Kategori') {
-                $query->where('kategori', $request->kategori);
-            }
-
-            $pengumuman = $query->orderBy('tanggal', 'desc')->paginate(6);
-
-            // Ambil kategori unik untuk filter sidebar
-            $kategoriList = Pengumuman::select('kategori')
-                ->distinct()
-                ->pluck('kategori');
-
+            $pengumuman = Pengumuman::latest()->paginate(9);
+            $kategoriList = Pengumuman::distinct()->pluck('kategori')->filter()->toArray();
             return view('landingbaru.pengumuman', compact('pengumuman', 'kategoriList'));
         }
     }
@@ -292,15 +418,15 @@ class BerandaController extends Controller
     {
         // Coba ambil data dari API terlebih dahulu
         $apiData = $pengumumanService->getPengumumanById($id);
-        
+
         if ($apiData !== null) {
             // Jika API berhasil, ambil recent dari API juga
             $allApiData = $pengumumanService->getAllPengumuman();
-            $recent = $allApiData ? $allApiData->take(3) : collect();
-            
+            $recent = $allApiData && isset($allApiData['items']) ? collect($allApiData['items'])->take(3) : collect();
+
             return view('landingbaru.detailpengumuman', [
                 'pengumuman' => $apiData,
-                'recent' => $recent
+                'recent' => $recent,
             ]);
         } else {
             // Fallback ke database jika API gagal
@@ -314,35 +440,51 @@ class BerandaController extends Controller
 
     public function berita(BeritaApiService $beritaService)
     {
-        // Coba ambil data dari API terlebih dahulu
-        $apiData = $beritaService->getAllBerita();
-        
-        if ($apiData !== null) {
-            // Jika API berhasil, gunakan data dari API dengan pagination manual
-            $perPage = 6;
-            $currentPage = request()->get('page', 1);
-            $total = $apiData->count();
-            $offset = ($currentPage - 1) * $perPage;
-            $items = $apiData->slice($offset, $perPage)->values();
-            
-            // Buat paginator manual
-            $beritas = new \Illuminate\Pagination\LengthAwarePaginator(
-                $items,
-                $total,
-                $perPage,
-                $currentPage,
-                [
-                    'path' => request()->url(),
+        $currentPage = request()->get('page', 1);
+        $apiData = $beritaService->getAllBerita($currentPage);
+
+        if ($apiData !== null && isset($apiData['items'])) {
+            // API berhasil dengan pagination
+            if (isset($apiData['pagination']) && $apiData['pagination'] !== null) {
+                // Gunakan pagination dari API
+                $pagination = $apiData['pagination'];
+                $beritas = new \Illuminate\Pagination\LengthAwarePaginator($apiData['items']->values(), $pagination['total'], $pagination['per_page'], $currentPage, [
+                    'path' => route('landing.berita'),
                     'pageName' => 'page',
-                ]
-            );
-            
-            return view('landingbaru.berita', compact('beritas'));
+                    'query' => request()->query(),
+                ]);
+
+                Log::info('Using API Berita with pagination', [
+                    'current_page' => $currentPage,
+                    'total' => $pagination['total'],
+                    'per_page' => $pagination['per_page'],
+                    'items_count' => $apiData['items']->count(),
+                ]);
+            } else {
+                // API berhasil tapi tanpa pagination, buat manual
+                $perPage = 9;
+                $total = $apiData['items']->count();
+                $offset = ($currentPage - 1) * $perPage;
+                $items = $apiData['items']->slice($offset, $perPage)->values();
+
+                $beritas = new \Illuminate\Pagination\LengthAwarePaginator($items, $total, $perPage, $currentPage, [
+                    'path' => route('landing.berita'),
+                    'pageName' => 'page',
+                ]);
+
+                Log::info('Using API Berita with manual pagination');
+            }
+
+            // Hitung kategori unik dari semua item (bukan hanya halaman saat ini)
+            $kategoriList = $apiData['items']->pluck('kategori', 'kategori')->keys()->filter()->unique()->values()->toArray();
+
+            return view('landingbaru.berita', compact('beritas', 'kategoriList'));
         } else {
             // Fallback ke database jika API gagal
             Log::info('Using database fallback for Berita data');
-            $beritas = Berita::latest()->paginate(6);
-            return view('landingbaru.berita', compact('beritas'));
+            $beritas = Berita::latest()->paginate(9);
+            $kategoriList = Berita::distinct()->pluck('kategori')->filter()->toArray();
+            return view('landingbaru.berita', compact('beritas', 'kategoriList'));
         }
     }
 
@@ -350,7 +492,7 @@ class BerandaController extends Controller
     {
         // Coba ambil data dari API terlebih dahulu
         $apiData = $beritaService->getBeritaById($id);
-        
+
         if ($apiData !== null) {
             // Jika API berhasil, gunakan data dari API
             return view('landingbaru.detailberita', ['berita' => $apiData]);
@@ -362,91 +504,53 @@ class BerandaController extends Controller
         }
     }
 
-     public function galeri(Request $request, GaleriApiService $galeriService)
+    public function galeri(Request $request, GaleriApiService $galeriService)
     {
-        // Coba ambil data dari API terlebih dahulu
-        $apiData = $galeriService->getAllGaleri();
-        
-        if ($apiData !== null) {
-            // Jika API berhasil, proses filtering pada data API
-            $filteredData = $apiData;
-            
-            $search = $request->get('search');
-            $sort = $request->get('sort', 'newest'); // default: terbaru
+        $currentPage = request()->get('page', 1);
+        $apiData = $galeriService->getAllGaleri($currentPage);
 
-            // Filter pencarian berdasarkan judul
-            if ($search) {
-                $searchTerm = strtolower($search);
-                $filteredData = $filteredData->filter(function($item) use ($searchTerm) {
-                    $judul = strtolower($item->judul ?? $item->title ?? '');
-                    $deskripsi = strtolower($item->deskripsi ?? $item->description ?? '');
-                    return str_contains($judul, $searchTerm) || str_contains($deskripsi, $searchTerm);
-                });
+        if ($apiData !== null && isset($apiData['items'])) {
+            // API berhasil dengan pagination
+            if (isset($apiData['pagination']) && $apiData['pagination'] !== null) {
+                // Gunakan pagination dari API
+                $pagination = $apiData['pagination'];
+                $galeris = new \Illuminate\Pagination\LengthAwarePaginator($apiData['items']->values(), $pagination['total'], $pagination['per_page'], $currentPage, [
+                    'path' => route('landing.galeri.index'),
+                    'pageName' => 'page',
+                    'query' => request()->query(),
+                ]);
+
+                Log::info('Using API Galeri with pagination', [
+                    'current_page' => $currentPage,
+                    'total' => $pagination['total'],
+                    'per_page' => $pagination['per_page'],
+                    'items_count' => $apiData['items']->count(),
+                ]);
+            } else {
+                // API berhasil tapi tanpa pagination, buat manual
+                $perPage = 9;
+                $total = $apiData['items']->count();
+                $offset = ($currentPage - 1) * $perPage;
+                $items = $apiData['items']->slice($offset, $perPage)->values();
+
+                $galeris = new \Illuminate\Pagination\LengthAwarePaginator($items, $total, $perPage, $currentPage, [
+                    'path' => route('landing.galeri.index'),
+                    'pageName' => 'page',
+                ]);
+
+                Log::info('Using API Galeri with manual pagination');
             }
 
-            // Sort data API
-            switch ($sort) {
-                case 'oldest':
-                    $filteredData = $filteredData->sortBy(function($item) {
-                        return $item->tanggal ?? $item->date ?? $item->created_at ?? '1970-01-01';
-                    });
-                    break;
-                case 'name_asc':
-                    $filteredData = $filteredData->sortBy(function($item) {
-                        return $item->judul ?? $item->title ?? '';
-                    });
-                    break;
-                case 'name_desc':
-                    $filteredData = $filteredData->sortByDesc(function($item) {
-                        return $item->judul ?? $item->title ?? '';
-                    });
-                    break;
-                case 'newest':
-                default:
-                    $filteredData = $filteredData->sortByDesc(function($item) {
-                        return $item->tanggal ?? $item->date ?? $item->created_at ?? '1970-01-01';
-                    });
-            }
+            // Hitung kategori unik dari semua item (bukan hanya halaman saat ini)
+            $kategoriList = $apiData['items']->pluck('kategori', 'kategori')->keys()->filter()->unique()->values()->toArray();
 
-            // Convert ke array untuk pagination
-            $galeris = $filteredData->values();
-            
-            return view('landingbaru.galeri', compact('galeris', 'search', 'sort'));
+            return view('landingbaru.galeri', compact('galeris', 'kategoriList'));
         } else {
             // Fallback ke database jika API gagal
             Log::info('Using database fallback for Galeri data');
-            
-            $search = $request->get('search');
-            $sort = $request->get('sort', 'newest'); // default: terbaru
-
-            // Query builder
-            $query = Galeri::query();
-
-            // Filter pencarian berdasarkan judul
-            if ($search) {
-                $query->where('judul', 'like', '%' . $search . '%');
-            }
-
-            // Sort berdasarkan timestamp Laravel
-            switch ($sort) {
-                case 'oldest':
-                    $query->orderBy('created_at', 'asc');
-                    break;
-                case 'name_asc':
-                    $query->orderBy('judul', 'asc');
-                    break;
-                case 'name_desc':
-                    $query->orderBy('judul', 'desc');
-                    break;
-                case 'newest':
-                default:
-                    $query->orderBy('created_at', 'desc');
-                    break;
-            }
-
-            $galeris = $query->get(); // Ambil semua data
-
-            return view('landingbaru.galeri', compact('galeris', 'search', 'sort'));
+            $galeris = Galeri::latest()->paginate(9);
+            $kategoriList = Galeri::distinct()->pluck('kategori')->filter()->toArray();
+            return view('landingbaru.galeri', compact('galeris', 'kategoriList'));
         }
     }
 
@@ -454,7 +558,7 @@ class BerandaController extends Controller
     {
         // Coba ambil data dari API terlebih dahulu
         $apiData = $galeriService->getGaleriById($id);
-        
+
         if ($apiData !== null) {
             // Jika API berhasil, gunakan data dari API
             return view('landingbaru.detailgaleri', ['galeri' => $apiData]);
@@ -476,7 +580,7 @@ class BerandaController extends Controller
         // Coba ambil data profil kampus dari API terlebih dahulu
         // Gunakan getActiveProfilKampus() untuk mendapatkan profil yang sedang aktif
         $apiProfilData = $profilService->getActiveProfilKampus();
-        
+
         if ($apiProfilData !== null) {
             // Jika API berhasil, gunakan data dari API
             $profil = $apiProfilData;
@@ -489,10 +593,10 @@ class BerandaController extends Controller
 
         // Untuk galeri, coba ambil dari API dulu, fallback ke database
         $apiGaleriData = $galeriService->getAllGaleri();
-        
+
         if ($apiGaleriData !== null) {
             // Jika API berhasil, ambil 8 data terbaru
-            $galeris = $apiGaleriData->take(8);
+            $galeris = $apiGaleriData['items']->take(8);
             Log::info('Using API data for Galeri in Kampus page');
         } else {
             // Fallback ke database untuk galeri
@@ -504,27 +608,72 @@ class BerandaController extends Controller
         return view('landingbaru.kampus', compact('profil', 'galeris'));
     }
 
+    public function testHomepageApiConnections(GaleriApiService $galeriService, BeritaApiService $beritaService, PengumumanApiService $pengumumanService, LandingApiService $landingService)
+    {
+        $results = [
+            'timestamp' => now(),
+            'apis' => [],
+        ];
+
+        // Test Galeri API
+        $results['apis']['galeri'] = [
+            'connection' => $galeriService->testConnection(),
+            'data_available' => $galeriService->getAllGaleri() !== null,
+            'fallback_count' => Galeri::count(),
+        ];
+
+        // Test Berita API
+        $results['apis']['berita'] = [
+            'connection' => $beritaService->testConnection(),
+            'data_available' => $beritaService->getAllBerita() !== null,
+            'fallback_count' => Berita::count(),
+        ];
+
+        // Test Pengumuman API
+        $results['apis']['pengumuman'] = [
+            'connection' => $pengumumanService->testConnection(),
+            'data_available' => $pengumumanService->getAllPengumuman() !== null,
+            'fallback_count' => Pengumuman::count(),
+        ];
+
+        // Test Landing/Hero API
+        $results['apis']['landing'] = [
+            'connection' => $landingService->testConnection(),
+            'data_available' => $landingService->getActiveLandingKampus() !== null,
+            'fallback_count' => LandingContent::count(),
+        ];
+
+        // Test FAQ (database only)
+        $results['apis']['faq'] = [
+            'api_available' => false,
+            'note' => 'Using database only - no API service',
+            'database_count' => Faq::count(),
+        ];
+
+        return response()->json($results, 200, [], JSON_PRETTY_PRINT);
+    }
+
     public function testKampusConnection(ProfilApiService $profilService, GaleriApiService $galeriService)
     {
         $results = [];
-        
+
         // Test Profil API Connection
         $results['profil_api'] = $profilService->testConnection();
-        
+
         // Test Galeri API Connection
         $results['galeri_api'] = $galeriService->testConnection();
-        
+
         // Test getting actual data
         $results['profil_data'] = [
             'api_data' => $profilService->getActiveProfilKampus(),
-            'database_data' => \App\Models\ProfilKampus::first()
+            'database_data' => \App\Models\ProfilKampus::first(),
         ];
-        
+
         $results['galeri_data'] = [
             'api_data' => $galeriService->getAllGaleri(),
-            'database_data' => \App\Models\Galeri::latest()->take(8)->get()
+            'database_data' => \App\Models\Galeri::latest()->take(8)->get(),
         ];
-        
+
         // Return as JSON for easy debugging
         return response()->json($results, 200, [], JSON_PRETTY_PRINT);
     }

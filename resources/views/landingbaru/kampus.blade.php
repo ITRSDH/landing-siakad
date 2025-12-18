@@ -55,7 +55,7 @@
         <h2 class="text-3xl font-semibold mb-6 text-gray-800">Struktur Organisasi</h2>
         <div class="bg-white p-6 rounded-lg shadow-md inline-block">
             @if(!empty($profil->struktur_image) || !empty($profil->struktur_foto))
-                <img src="{{ asset('struktur/' . ($profil->struktur_image ?? $profil->struktur_foto)) }}" 
+                <img src="{{ config('app.api_storage') . ($profil->struktur_image ?? $profil->struktur_foto) }}" 
                      alt="Struktur Organisasi"
                      class="rounded-lg shadow-md mx-auto w-full max-w-4xl object-contain">
             @else
@@ -129,29 +129,10 @@
     <!-- Grid Galeri -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       @forelse($galeris ?? [] as $galeri)
-        @php
-          // Handle different image field formats from API vs database
-          $gambarSrc = null;
-          if (isset($galeri->gambar)) {
-            if (is_array($galeri->gambar) && count($galeri->gambar) > 0) {
-              $gambarSrc = asset($galeri->gambar[0]);
-            } elseif (is_string($galeri->gambar)) {
-              $gambarSrc = asset($galeri->gambar);
-            }
-          } elseif (isset($galeri->images) && is_array($galeri->images) && count($galeri->images) > 0) {
-            $gambarSrc = asset($galeri->images[0]);
-          } elseif (isset($galeri->image)) {
-            $gambarSrc = asset($galeri->image);
-          }
-          
-          if (!$gambarSrc) {
-            $gambarSrc = 'https://picsum.photos/600/338?random=' . ($galeri->id ?? rand(1, 1000));
-          }
-        @endphp
       <div class="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition duration-300">
         <div class="relative">
           <img 
-            src="{{ $gambarSrc }}" 
+            src="{{ $galeri->gambar ? config('app.api_storage') . $galeri->gambar : 'https://picsum.photos/600/338?random=' . $galeri->id }}" 
             alt="{{ $galeri->judul ?? $galeri->title ?? 'Galeri' }}" 
             class="w-full h-48 object-cover">
         </div>

@@ -41,7 +41,7 @@
       <!-- Gambar -->
       <div class="relative">
         {{-- <img src="{{ asset($item->gambar ?? $item->logo ?? 'images/default-scholarship.jpg') }}" alt="{{ $item->nama ?? $item->name ?? 'Beasiswa' }}" class="w-full h-40 object-cover"> --}}
-        <img src="https://picsum.photos/320/200?random={{ $item->id }}" alt="{{ $item->nama ?? $item->name ?? 'Beasiswa' }}" class="w-full h-40 object-cover">
+        <img src="{{ $item->gambar ? config('app.api_storage') . $item->gambar : 'https://picsum.photos/600/338?random=' . $item->id }}" alt="{{ $item->nama ?? $item->name ?? 'Beasiswa' }}" class="w-full h-40 object-cover">
         <span class="absolute top-3 left-3 text-xs font-semibold px-2 py-1 rounded-lg shadow-sm 
             @if(($item->kategori ?? '') == 'Prestasi') bg-blue-100 text-blue-700 
             @elseif(($item->kategori ?? '') == 'Bidikmisi' || ($item->kategori ?? '') == 'KIP') bg-green-100 text-green-700 

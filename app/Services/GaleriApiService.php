@@ -20,36 +20,57 @@ class GaleriApiService
     /**
      * Get all Galeri data from API
      */
-    public function getAllGaleri()
+    public function getAllGaleri($page = 1)
     {
         try {
-            $response = Http::timeout($this->timeout)
-                ->get($this->apiUrl . '/galeri');
+            $response = Http::timeout($this->timeout)->get($this->apiUrl . '/galeri', ['page' => $page]);
 
             if ($response->successful()) {
                 $data = $response->json();
-                
-                // Handle different API response structures
-                if (isset($data['data'])) {
-                    return collect($data['data'])->map(function($item) {
-                        return ensure_galeri_object($item);
-                    });
-                } elseif (isset($data['galeri'])) {
-                    return collect($data['galeri'])->map(function($item) {
-                        return ensure_galeri_object($item);
-                    });
-                } else {
-                    return collect($data)->map(function($item) {
-                        return ensure_galeri_object($item);
-                    });
+
+                Log::debug('API Galeri response:', [
+                    'status' => $data['status'] ?? 'unknown',
+                    'has_data' => isset($data['data']),
+                    'structure' => isset($data['data']['data']) ? 'paginated' : 'direct',
+                ]);
+
+                // Handle paginated response: {status, data: {current_page, data: [...], total, ...}}
+                if (isset($data['data']) && is_array($data['data'])) {
+                    // If it's a paginated response with nested data
+                    if (isset($data['data']['data']) && isset($data['data']['total'])) {
+                        return [
+                            'items' => collect($data['data']['data'])->map(function ($item) {
+                                return ensure_galeri_object($item);
+                            }),
+                            'pagination' => [
+                                'current_page' => $data['data']['current_page'] ?? 1,
+                                'total' => $data['data']['total'] ?? 0,
+                                'per_page' => $data['data']['per_page'] ?? 10,
+                                'last_page' => $data['data']['last_page'] ?? 1,
+                                'from' => $data['data']['from'] ?? null,
+                                'to' => $data['data']['to'] ?? null,
+                                'next_page_url' => $data['data']['next_page_url'] ?? null,
+                                'prev_page_url' => $data['data']['prev_page_url'] ?? null,
+                                'links' => $data['data']['links'] ?? [],
+                            ],
+                        ];
+                    }
+                    // If it's a direct array
+                    else {
+                        return [
+                            'items' => collect($data['data'])->map(function ($item) {
+                                return ensure_galeri_object($item);
+                            }),
+                            'pagination' => null,
+                        ];
+                    }
                 }
+
+                Log::warning('API Pengumuman response missing data field');
+                return null;
             }
-
-            Log::warning('API Galeri returned non-successful status: ' . $response->status());
-            return null;
-
         } catch (Exception $e) {
-            Log::error('API Galeri Error: ' . $e->getMessage());
+            Log::error('API Berita Error: ' . $e->getMessage());
             return null;
         }
     }

@@ -3,7 +3,7 @@
 @section('content')
 <!-- Hero Section -->
 <section class="relative bg-gradient-to-r from-blue-900 to-blue-700 text-white bg-cover bg-center min-h-screen"
-  style="background-image: url('https://picsum.photos/1920/1080')">
+  style="background-image: url('{{ $hero?->hero_background ? config('app.api_storage') . $hero->hero_background : 'https://picsum.photos/1920/1080' }}')">
 
   <!-- Overlay hitam transparan -->
   <div class="absolute inset-0 bg-black opacity-60"></div>
@@ -82,13 +82,13 @@ $jumlahMitra = $hero?->jumlah_mitra ?? 0;
         <div class="bg-white border border-gray-200 rounded-lg">
           <div class="flex items-center justify-between border-b border-gray-200 px-4 py-3">
             <h3 class="text-lg font-semibold text-gray-700">Pengumuman Penting</h3>
-            <a href="{{ route('pengumuman.index') }}" class="text-sm px-3 py-1 rounded border border-gray-300 text-gray-600 hover:bg-gray-100 transition">
+            <a href="{{ route('pengumumans.index') }}" class="text-sm px-3 py-1 rounded border border-gray-300 text-gray-600 hover:bg-gray-100 transition">
               Lihat Semua
             </a>
           </div>
           <div class="divide-y divide-gray-200">
             @forelse($pengumumen as $pengumuman)
-            <a href="{{ route('pengumuman.show', $pengumuman) }}" class="flex items-center gap-4 px-4 py-3 hover:bg-gray-50 transition">
+            <a href="{{ route('detailpengumuman.index', $pengumuman->id) }}" class="flex items-center gap-4 px-4 py-3 hover:bg-gray-50 transition">
               <span class="w-1.5 h-8 rounded 
             @if($pengumuman->kategori == 'Penting') bg-red-400 
             @elseif($pengumuman->kategori == 'Akademik') bg-green-400 
@@ -183,31 +183,21 @@ if (!is_array($keunggulanItems)) {
   <div class="container mx-auto px-4">
     <h2 class="text-3xl md:text-4xl font-bold mb-12 text-left">Program Studi</h2>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-      @for($i=1;$i<=6;$i++)
-        <div class="bg-white rounded-xl border border-gray-200 overflow-hidden flex flex-col 
-            hover:shadow-xl hover:-translate-y-2 transition duration-300">
-        <!-- Gambar -->
-        <img src="https://picsum.photos/400/250?random={{ $i+20 }}"
-          class="w-full h-48 object-cover hover:scale-105 transition duration-500">
-        <!-- Konten -->
-        <div class="p-6 flex-1 flex flex-col">
-          <h3 class="text-lg font-semibold text-gray-800 mb-2">Program Studi {{ $i }}</h3>
-          <p class="text-gray-600 flex-1">
-            Deskripsi singkat mengenai Program Studi {{ $i }}. Menyediakan kurikulum modern dengan dukungan dosen berkualitas.
+      @if($prodis)
+        @foreach($prodis as $prodi)
+        <a href="{{ route('detailprodi.index', ['id' => $prodi['id'] ?? $prodi->id]) }}" class="bg-white rounded-2xl shadow-md border border-gray-100 hover:-translate-y-2 transition-all duration-300 hover:shadow-xl">
+          <h3 class="bg-gradient-to-r from-[#003366] to-[#00509d] text-white text-lg font-semibold px-6 py-4 rounded-t-2xl">
+            {{ $prodi['nama_prodi'] ?? $prodi->nama_prodi }} ({{ $prodi['kode_prodi'] ?? $prodi->kode_prodi }})
+          </h3>
+          <p class="p-6 text-gray-600">
+            Deskripsi singkat mengenai Program Studi. Menyediakan kurikulum modern dengan dukungan dosen berkualitas.
           </p>
-        </div>
-
-        <!-- Tombol -->
-        <div class="p-6 pt-0">
-          <a href="/detailprodi"
-            class="block w-full text-center bg-blue-600 text-white py-2 px-4 rounded-lg 
-              hover:bg-blue-700 hover:scale-105 transition duration-300">
-            Selengkapnya
-          </a>
-        </div>
+        </a>
+        @endforeach
+      @else
+        <p class="text-gray-600">Tidak ada data Program Studi tersedia saat ini.</p>
+      @endif
     </div>
-    @endfor
-  </div>
   </div>
 </section>
 
@@ -229,15 +219,23 @@ if (!is_array($keunggulanItems)) {
       <!-- Featured -->
       @if($utama)
       <div class="lg:col-span-7 bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition duration-300">
-        <img src="https://picsum.photos/1200/640?random={{ $utama->id }}" class="w-full h-64 object-cover" alt="{{ $utama->judul }}">
+        <img src="{{ $utama->gambar ? config('app.api_storage') . $utama->gambar : 'https://picsum.photos/1200/640?random=' . $utama->id }}" class="w-full h-64 object-cover" alt="{{ $utama->judul }}">
         <div class="p-6">
           <div class="flex items-center gap-2 mb-2">
             <span class="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded">{{ $utama->kategori }}</span>
-            <span class="text-gray-500 text-sm">{{ $utama->tanggal->format('d M Y') }}</span>
+            <span class="text-gray-500 text-sm">
+              @if(is_string($utama->tanggal))
+                {{ \Carbon\Carbon::parse($utama->tanggal)->format('d M Y') }}
+              @elseif($utama->tanggal instanceof \Carbon\Carbon)
+                {{ $utama->tanggal->format('d M Y') }}
+              @else
+                {{ date('d M Y') }}
+              @endif
+            </span>
           </div>
           <h3 class="text-xl font-semibold mb-2">{{ $utama->judul }}</h3>
           <p class="text-gray-600 mb-4">{{ Str::limit(strip_tags($utama->isi), 100) }}</p>
-          <a href="{{ route('landing.detailberita', $utama) }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">Baca Selengkapnya</a>
+          <a href="{{ route('landing.detailberita', $utama->id) }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">Baca Selengkapnya</a>
         </div>
       </div>
       @endif
@@ -246,15 +244,23 @@ if (!is_array($keunggulanItems)) {
       <div class="lg:col-span-5 space-y-4">
         @foreach($lainnya as $berita)
         <div class="flex gap-4 bg-white rounded-xl border border-gray-200 p-4 hover:shadow-lg hover:-translate-y-1 transition duration-300">
-          <img src="https://picsum.photos/320/200?random={{ $berita->id }}" class="w-32 h-20 object-cover rounded" alt="{{ $berita->judul }}">
+          <img src="{{ $berita->gambar ? config('app.api_storage') . $berita->gambar : 'https://picsum.photos/320/200?random=' . $berita->id }}" class="w-32 h-20 object-cover rounded" alt="{{ $berita->judul }}">
           <div>
             <div class="flex items-center gap-2 text-xs mb-1">
               <span class="bg-gray-200 text-gray-700 px-2 py-0.5 rounded">{{ $berita->kategori }}</span>
-              <span class="text-gray-500">{{ $berita->tanggal->format('d M Y') }}</span>
+              <span class="text-gray-500">
+                @if(is_string($berita->tanggal))
+                  {{ \Carbon\Carbon::parse($berita->tanggal)->format('d M Y') }}
+                @elseif($berita->tanggal instanceof \Carbon\Carbon)
+                  {{ $berita->tanggal->format('d M Y') }}
+                @else
+                  {{ date('d M Y') }}
+                @endif
+              </span>
             </div>
             <h4 class="text-sm font-semibold">{{ $berita->judul }}</h4>
             <p class="text-gray-500 text-xs mb-2">{{ Str::limit(strip_tags($berita->isi), 60) }}</p>
-            <a href="{{ route('landing.detailberita', $berita) }}" class="text-blue-600 text-sm">Baca →</a>
+            <a href="{{ route('landing.detailberita', $berita->id) }}" class="text-blue-600 text-sm">Baca →</a>
           </div>
         </div>
         @endforeach
@@ -275,16 +281,10 @@ if (!is_array($keunggulanItems)) {
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       @forelse($galeris as $galeri)
-      @php
-      // Ambil gambar pertama dari JSON
-      $gambarUtama = is_array($galeri->gambar) && count($galeri->gambar) > 0
-      ? asset($galeri->gambar[0])
-      : 'https://picsum.photos/600/338?random=' . $galeri->id;
-      @endphp
       <div class="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition duration-300">
         <div class="relative">
           <img
-            src="{{ $gambarUtama }}"
+            src="{{ config('app.api_storage') . $galeri->gambar }}"
             class="w-full h-48 object-cover"
             alt="{{ $galeri->judul }}">
         </div>
@@ -294,7 +294,25 @@ if (!is_array($keunggulanItems)) {
               {{ $galeri->kategori ?? 'Umum' }}
             </span>
             <span class="text-gray-500 text-xs">
-              {{ $galeri->created_at->format('d M Y') }}
+              @if(isset($galeri->tanggal))
+                @if(is_string($galeri->tanggal))
+                  {{ \Carbon\Carbon::parse($galeri->tanggal)->format('d M Y') }}
+                @elseif($galeri->tanggal instanceof \Carbon\Carbon)
+                  {{ $galeri->tanggal->format('d M Y') }}
+                @else
+                  {{ date('d M Y') }}
+                @endif
+              @elseif(isset($galeri->created_at))
+                @if(is_string($galeri->created_at))
+                  {{ \Carbon\Carbon::parse($galeri->created_at)->format('d M Y') }}
+                @elseif($galeri->created_at instanceof \Carbon\Carbon)
+                  {{ $galeri->created_at->format('d M Y') }}
+                @else
+                  {{ date('d M Y') }}
+                @endif
+              @else
+                {{ date('d M Y') }}
+              @endif
             </span>
           </div>
           <h3 class="font-semibold mb-2">{{ $galeri->judul }}</h3>

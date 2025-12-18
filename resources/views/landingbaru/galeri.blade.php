@@ -38,27 +38,7 @@
     @forelse($galeris as $galeri)
     <div class="bg-white border border-gray-200 rounded-xl overflow-hidden group hover:shadow-md transition">
       <div class="relative">
-        {{-- @php
-          // Handle different image field formats from API vs database
-          $gambarSrc = null;
-          if (isset($galeri->gambar)) {
-            if (is_array($galeri->gambar) && count($galeri->gambar) > 0) {
-              $gambarSrc = asset($galeri->gambar[0]);
-            } elseif (is_string($galeri->gambar)) {
-              $gambarSrc = asset($galeri->gambar);
-            }
-          } elseif (isset($galeri->images) && is_array($galeri->images) && count($galeri->images) > 0) {
-            $gambarSrc = asset($galeri->images[0]);
-          } elseif (isset($galeri->image)) {
-            $gambarSrc = asset($galeri->image);
-          }
-          
-          if (!$gambarSrc) {
-            $gambarSrc = 'https://picsum.photos/600/338?random=' . ($galeri->id ?? rand(1, 1000));
-          }
-        @endphp
-        <img src="{{ $gambarSrc }}" class="w-full h-48 object-cover" alt="{{ $galeri->judul ?? $galeri->title ?? 'Galeri' }}"> --}}
-        <img src="https://picsum.photos/600/338?random={{ $galeri->id }}" class="w-full h-48 object-cover" alt="{{ $galeri->judul ?? $galeri->title ?? 'Galeri' }}">
+        <img src="{{ $galeri->gambar ? config('app.api_storage') . $galeri->gambar : 'https://picsum.photos/600/338?random=' . $galeri->id }}" class="w-full h-48 object-cover" alt="{{ $galeri->judul ?? $galeri->title ?? 'Galeri' }}">
       </div>
       <div class="p-4">
         <span class="text-xs font-medium px-2 py-1 bg-blue-100 text-blue-600 rounded">
@@ -92,6 +72,12 @@
     @endforelse
 
   </div>
+
+  @if(method_exists($galeris, 'links'))
+    <div class="mt-10 flex justify-center">
+      {{ $galeris->withQueryString()->links() }}
+    </div>
+  @endif
 </section>
 
 @endsection

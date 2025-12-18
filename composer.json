@@ -33,7 +33,10 @@
             "app/Helpers/PengumumanHelper.php",
             "app/Helpers/BeritaHelper.php",
             "app/Helpers/GaleriHelper.php",
-            "app/Helpers/ProfileKampusHelper.php"
+            "app/Helpers/ProfileKampusHelper.php",
+            "app/Helpers/LandingContentHelper.php",
+            "app/Helpers/FaqHelper.php",
+            "app/Helpers/ProdiHelper.php"
         ]
     },
     "autoload-dev": {

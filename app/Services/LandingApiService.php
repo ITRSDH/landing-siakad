@@ -39,13 +39,13 @@ class LandingApiService
                 // Handle API response structure sesuai dengan controller API
                 if (isset($data['data'])) {
                     Log::info('Using data from data key');
-                    return ensure_profil_object($data['data']);
+                    return ensure_landing_object($data['data']);
                 } elseif (isset($data['success']) && $data['success'] && isset($data['data'])) {
                     Log::info('Using data from success.data key');
-                    return ensure_profil_object($data['data']);
+                    return ensure_landing_object($data['data']);
                 } else {
                     Log::info('Using raw data');
-                    return ensure_profil_object($data);
+                    return ensure_landing_object($data);
                 }
             }
 
@@ -74,13 +74,13 @@ class LandingApiService
     public function testConnection()
     {
         try {
-            $response = Http::timeout(10)->get($this->apiUrl . '/profile-kampus');
+            $response = Http::timeout(10)->get($this->apiUrl . '/landing-content');
 
             return [
                 'success' => $response->successful(),
                 'status' => $response->status(),
                 'response_time' => $response->transferStats->getTransferTime() ?? 0,
-                'url' => $this->apiUrl . '/profile-kampus',
+                'url' => $this->apiUrl . '/landing-content',
                 'response_preview' => $response->successful() ? 
                     (isset($response->json()['message']) ? $response->json()['message'] : 'Data available') : 
                     'No data'
@@ -90,7 +90,7 @@ class LandingApiService
             return [
                 'success' => false,
                 'error' => $e->getMessage(),
-                'url' => $this->apiUrl . '/profile-kampus'
+                'url' => $this->apiUrl . '/landing-content'
             ];
         }
     }

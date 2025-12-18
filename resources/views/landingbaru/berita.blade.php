@@ -23,13 +23,11 @@
 
       @foreach($beritas as $berita)
       <article class="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition">
-        {{-- <img src="{{ asset($berita->gambar ?? $berita->image ?? 'https://picsum.photos/960/540') }}" 
+        <img src="{{ $berita->gambar ? config('app.api_storage') . $berita->gambar : 'https://picsum.photos/600/338?random=' . $berita->id }}" alt="{{ $berita->nama ?? $berita->name ?? 'Beasiswa' }}" class="w-full h-40 object-cover">
+
+        {{-- <img src="https://picsum.photos/960/540?random={{ $berita->id }}" 
              alt="{{ $berita->judul ?? $berita->title ?? 'Berita' }}" 
              class="w-full h-56 object-cover"> --}}
-
-        <img src="https://picsum.photos/960/540?random={{ $berita->id }}" 
-             alt="{{ $berita->judul ?? $berita->title ?? 'Berita' }}" 
-             class="w-full h-56 object-cover">
 
         <div class="p-6">
           <span class="inline-block bg-blue-100 text-blue-600 text-xs px-3 py-1 rounded mb-3">

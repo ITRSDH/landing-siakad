@@ -61,7 +61,7 @@
                 @if(count($images) > 0)
                     @foreach($images as $index => $img)
                     <div>
-                        <img src="{{ asset($img) }}" alt="Foto {{ $index + 1 }}" class="w-full h-48 object-cover rounded-lg">
+                        <img src="{{ $img ? config('app.api_storage') . $img : 'https://picsum.photos/600/338?random=' . $index }}" alt="Foto {{ $index + 1 }}" class="w-full h-48 object-cover rounded-lg">
                     </div>
                     @endforeach
                 @else

@@ -27,14 +27,14 @@ Route::get('/prestasibaru', [BerandaController::class, 'prestasi'])->name('landi
 Route::get('/kontakbaru', [BerandaController::class, 'kontak'])->name('kontak.index');
 Route::get('/infopembayaran', [BerandaController::class, 'pembayaran'])->name('pembayaran.index');
 Route::get('/transkrip', [BerandaController::class, 'transkrip'])->name('transkrip.index');
-Route::get('/detailprodi', [BerandaController::class, 'detailProdi'])->name('detailprodi.index');
+Route::get('/detailprodi/{id}', [BerandaController::class, 'detailProdi'])->name('detailprodi.index');
 Route::get('/detailormawa/{id}', [BerandaController::class, 'detailOrmawa'])->name('landing.detailormawa');
 Route::get('/detailbeasiswa/{id}', [BerandaController::class, 'detailBeasiswa'])->name('landing.detailbeasiswa');
 Route::get('/detailprestasi/{id}', [BerandaController::class, 'detailPrestasi'])->name('landing.detailprestasi');
 Route::get('/detailpengumuman/{id}', [BerandaController::class, 'detailPengumuman'])->name('detailpengumuman.index');
 Route::get('/detailberita/{id}', [BerandaController::class, 'detailBerita'])->name('landing.detailberita');
 Route::get('/detailgaleri/{id}', [BerandaController::class, 'detailGaleri'])->name('detailgaleri.index');
-Route::get('/pengumumanbaru', [BerandaController::class, 'pengumuman'])->name('pengumuman.index');
+Route::get('/pengumumanbaru', [BerandaController::class, 'pengumuman'])->name('pengumumans.index');
 Route::get('/beritabaru', [BerandaController::class, 'berita'])->name('landing.berita');
 Route::get('/kalender-akademikbaru', [BerandaController::class, 'kalender'])->name('kalender.index');
 Route::get('/galeribaru', [BerandaController::class, 'galeri'])->name('landing.galeri.index');

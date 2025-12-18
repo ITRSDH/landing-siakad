@@ -44,9 +44,9 @@
           data-category="{{ strtolower($item->kategori ?? 'umum') }}" data-name="{{ $item->nama ?? $item->name ?? 'Tidak ada nama' }}">
 
         <div class="relative">
-          <img src="images/logo.png" alt="{{ $item->nama ?? $item->name ?? 'Organisasi' }}" class="w-full h-40 object-cover">
+          <img src="{{ $item->gambar ? config('app.api_storage') . $item->gambar : 'https://picsum.photos/600/338?random=' . $item->id }}" alt="{{ $item->nama ?? $item->name ?? 'Organisasi' }}" class="w-full h-40 object-cover">
           <span class="absolute top-3 left-3 bg-blue-100 text-blue-700 text-xs font-semibold px-2 py-1 rounded-lg shadow-sm">
-            {{ ucfirst($item->kategori ?? 'Umum') }}
+            {{ ucfirst(str_replace('_', ' ', $item->kategori ?? 'Umum')) }}
           </span>
         </div>
 

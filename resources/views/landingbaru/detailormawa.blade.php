@@ -4,7 +4,7 @@
 
 <!-- Hero Detail Ormawa -->
 <section class="relative bg-cover bg-center text-white py-20 md:py-28"
-    style="background-image: url('{{ asset( $ormawa->gambar) }}');">
+    style="background-image: url('{{ $ormawa->gambar ? config('app.api_storage') . $ormawa->gambar : 'https://picsum.photos/1200/600?random=' . $ormawa->id }}');">
     <div class="absolute inset-0 bg-blue-900/70"></div>
     <div class="relative container mx-auto px-4 text-center">
         <h1 class="text-3xl md:text-5xl font-bold mb-4">{{ $ormawa->nama }}</h1>

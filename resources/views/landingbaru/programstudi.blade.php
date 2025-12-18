@@ -16,16 +16,22 @@
     </h2>
 
     <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-        @for ($i = 1; $i <= 6; $i++)
-        <a href="/detailprodi" class="bg-white rounded-2xl shadow-md border border-gray-100 hover:-translate-y-2 transition-all duration-300 hover:shadow-xl">
-            <h3 class="bg-gradient-to-r from-[#003366] to-[#00509d] text-white text-lg font-semibold px-6 py-4 rounded-t-2xl">
-                Program Studi {{ $i }}
-            </h3>
-            <p class="p-6 text-gray-600">
-                Deskripsi singkat mengenai Program Studi {{ $i }}. Menyediakan kurikulum modern dengan dukungan dosen berkualitas.
-            </p>
-</a>
-        @endfor
+        @if($prodis && count($prodis) > 0)
+            @foreach ($prodis as $prodi)
+              <a href="{{ route('detailprodi.index', ['id' => $prodi['id'] ?? $prodi->id]) }}" class="bg-white rounded-2xl shadow-md border border-gray-100 hover:-translate-y-2 transition-all duration-300 hover:shadow-xl">
+                  <h3 class="bg-gradient-to-r from-[#003366] to-[#00509d] text-white text-lg font-semibold px-6 py-4 rounded-t-2xl">
+                     {{ $prodi['nama_prodi'] ?? $prodi->nama_prodi }} ({{ $prodi['kode_prodi'] ?? $prodi->kode_prodi }})
+                  </h3>
+                  <p class="p-6 text-gray-600">
+                      Deskripsi singkat mengenai Program Studi. Menyediakan kurikulum modern dengan dukungan dosen berkualitas.
+                  </p>
+              </a>
+            @endforeach
+        @else
+            <div class="col-span-full bg-yellow-50 border border-yellow-200 rounded-lg p-8 text-center">
+                <p class="text-gray-600 text-lg">Data Program Studi tidak tersedia.</p>
+            </div>
+        @endif
     </div>
 </div>
 
@@ -72,8 +78,7 @@
 </section>
 <!-- CTA -->
 <section
-    class="relative bg-cover bg-center text-white py-24 px-6 rounded-3xl max-w-6xl mx-auto mb-20 text-center flex flex-col items-center justify-center shadow-xl"
-    style="background-image:linear-gradient(rgba(0,51,102,0.85),rgba(0,31,77,0.85)),url('https://via.placeholder.com/1200x400/003366/ffffff?text=Campus+View');">
+    class="relative bg-gradient-to-r from-[#003366] to-[#00509d] text-white py-24 px-6 rounded-3xl max-w-6xl mx-auto mb-20 text-center flex flex-col items-center justify-center shadow-xl">
     <h2 class="text-4xl font-bold mb-6">Siap Bergabung dengan Kami?</h2>
     <p class="text-lg max-w-2xl mx-auto opacity-90">Daftar sekarang dan mulai perjalanan akademik Anda bersama kami.</p>
     <a href="#"
