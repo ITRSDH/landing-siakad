@@ -29,10 +29,13 @@ if (!function_exists('debug_prestasi_data')) {
 if (!function_exists('ensure_prestasi_object')) {
     /**
      * Pastikan data prestasi dalam format object yang konsisten
+     * Menggunakan deep conversion untuk nested objects seperti 'prodi'
      */
     function ensure_prestasi_object($data) {
         if (is_array($data)) {
-            return (object) $data;
+            // Deep conversion: semua nested arrays jadi objects
+            // Contoh: array['prodi']['nama_prodi'] -> object->prodi->nama_prodi
+            return json_decode(json_encode($data), false);
         }
         return $data;
     }

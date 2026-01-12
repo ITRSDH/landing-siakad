@@ -87,6 +87,87 @@
         </a>
     </div>
     @endif
+
+    {{-- Visi & Misi --}}
+    <div class="mt-12">
+        <h3 class="text-2xl font-semibold text-[#003366] mb-4">Visi dan Misi</h3>
+        @if(isset($prodi['nama_prodi']) && $prodi['nama_prodi'] == 'Keperawatan')
+            <div class="mt-4">
+                <h4 class="text-xl font-semibold text-[#003366] mb-4">Visi</h4>
+                <p class="text-lg text-gray-600">Menjadi Program Studi Yang Menghasilkan Lulusan Sarjana Keperawatan Yang Unggul Dibidang Keperawatan Gawat Darurat Dan Berjiwa Enterpreneur Pada Tahun 2030.</p>
+            </div>
+            <div class="mt-4">
+                <h4 class="text-xl font-semibold text-[#003366] mb-4">Misi</h4>
+                <ul class="list-disc list-inside text-lg text-gray-600">
+                    <li>Menyelenggarakan pendidikan sarjana keperawatan melalui pembelajaran yang berkualitas</li>
+                    <li>Terlaksananya proses pendidikan sesuai standar yang sudah ditetapkan</li>
+                    <li>Terwujudnya hasil penelitian untuk meningkatkan pelayanan keperawatan dalam pengembangan ilmu keperawatan </li>
+                    <li>Terlaksananya pengabdian masyarakat di bidang keperawatan yang bermanfaat bagi masyarakat</li>
+                    <li>Terwujudnya sarana dan prasarana yang memadai untuk pendidikan dan penelitian di bidang keperawatan</li>
+                </ul>
+            </div>
+        @elseif(isset($prodi['nama_prodi']) && $prodi['nama_prodi'] == 'Sarjana Keperawatan')
+            <div class="mt-4">
+                <h4 class="text-xl font-semibold text-[#003366] mb-4">Visi</h4>
+                <p class="text-lg text-gray-600">Menjadi Program Studi Yang Menghasilkan Lulusan Sarjana Keperawatan Yang Unggul Dibidang Keperawatan Gawat Darurat Dan Berjiwa Enterpreneur Pada Tahun 2030.</p>
+            </div>
+            <div class="mt-4">
+                <h4 class="text-xl font-semibold text-[#003366] mb-4">Misi</h4>
+                <ul class="list-disc list-inside text-lg text-gray-600">
+                    <li>Menyelenggarakan pendidikan sarjana keperawatan melalui pembelajaran yang berkualitas</li>
+                    <li>Terlaksananya proses pendidikan sesuai standar yang sudah ditetapkan</li>
+                    <li>Terwujudnya hasil penelitian untuk meningkatkan pelayanan keperawatan dalam pengembangan ilmu keperawatan </li>
+                    <li>Terlaksananya pengabdian masyarakat di bidang keperawatan yang bermanfaat bagi masyarakat</li>
+                    <li>Terwujudnya sarana dan prasarana yang memadai untuk pendidikan dan penelitian di bidang keperawatan</li>
+                </ul>
+            </div>
+        @elseif(isset($prodi['nama_prodi']) && $prodi['nama_prodi'] == 'Kebidanan')
+            <div class="mt-4">
+                <h4 class="text-xl font-semibold text-[#003366] mb-4">Visi</h4>
+                <p class="text-lg text-gray-600">Menjadi Program Studi DIII Kebidanan Yang Unggul Dalam Bidang Pelayanan KIA Di Komunitas Dan Berjiwa Entrepreneur Di Tahun 2030</p>
+            </div>
+            <div class="mt-4">
+                <h4 class="text-xl font-semibold text-[#003366] mb-4">Misi</h4>
+                <ul class="list-disc list-inside text-lg text-gray-600">
+                    <li>Menyelenggarakan proses pendidikan bidan melalui pembelajaran berkualitas dan unggul dalam bidang pelayanan KIA di Komunitas</li>
+                    <li>Menghasilkan tenaga bidan yang berjiwa entrepreneur</li>
+                    <li>Menghasilkan penelitian yang berbasis pada pelayanan KIA di Komunitas yang berkelanjutan sesuai dengan perkembangan ilmu kebidanan </li>
+                    <li>Mengimplementasikan pengabdian kepada masyarakat secara berkesinambungan yang berbasis pada pelayanan KIA di Komunitas berdasarkan perkembangan ilmu kebidanan</li>
+                </ul>
+            </div>
+        @elseif(isset($prodi['nama_prodi']) && $prodi['nama_prodi'] == 'Profesi Ners')
+            <div class="mt-4">
+                <h4 class="text-xl font-semibold text-[#003366] mb-4">Visi</h4>
+                <p class="text-lg text-gray-600">Menjadi Program Studi Yang Menghasilkan Lulusan Ners Yang Unggul Dibidang Keperawatan Gawat Darurat Dan Berjiwa Enterpreneur Pada Tahun 2030</p>
+            </div>
+            <div class="mt-4">
+                <h4 class="text-xl font-semibold text-[#003366] mb-4">Misi</h4>
+                <ul class="list-disc list-inside text-lg text-gray-600">
+                    <li>Menyelenggarakan pendidikan profesi nersmelalui pembelajaran  yang berkualitas</li>
+                    <li>Terlaksananya proses pendidikan sesuai standar yang sudah ditetapkan</li>
+                    <li>Terwujudnya hasil penelitian untuk meningkatkan pelayanan keperawatan dan pengembangan ilmu keperawatan</li>
+                    <li>Terlaksananya pengabdian masyarakat di bidang keperawatan yang bermanfaat bagi masyarakat</li>
+                    <li>Terwujudnya jiwa entrepreneur kesehatan dan mampu menangani masalah keperawatan gawat darurat</li>
+                </ul>
+            </div>
+        @elseif(isset($prodi['nama_prodi']) && $prodi['nama_prodi'] == 'Radiologi Pencitraan')
+            <div class="mt-4">
+                <h4 class="text-xl font-semibold text-[#003366] mb-4">Visi</h4>
+                <p class="text-lg text-gray-600">Menjadikan Teknologi Radiologi Pencitraan Yang Unggul dalam Optimalisasi Teknik Radiologi Imejing Diagnostic Berfokus Pada Quality Control Dan Keselamatan Pasien (Patient Safety) Dipelayanan Kesehatan Serta Berjiwa Entrepreneur Tahun 2030</p>
+            </div>
+            <div class="mt-4">
+                <h4 class="text-xl font-semibold text-[#003366] mb-4">Misi</h4>
+                <ul class="list-disc list-inside text-lg text-gray-600">
+                    <li>Menyelenggarakan pendidikan Teknik Radiologi Pencitraan Berfokus Pada Quality Control Dan Keselamatan Pasien (Patient Safety) Dipelayanan Kesehatan</li>
+                    <li>Terlaksananya proses pendidikan sesuai standar yang sudah ditetapkan</li>
+                    <li>Terwujudnya hasil penelitian untuk meningkatkan pelayanan keperawatan dan pengembangan ilmu keperawatan</li>
+                    <li>Terlaksananya pengabdian masyarakat di bidang keperawatan yang bermanfaat bagi masyarakat</li>
+                    <li>Terwujudnya jiwa entrepreneur kesehatan dan mampu menangani masalah keperawatan gawat darurat</li>
+                </ul>
+            </div>
+        @endif
+
+    </div>
 </div>
 
 <!-- CTA -->

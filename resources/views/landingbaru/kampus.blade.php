@@ -41,8 +41,49 @@
             </div>
             <div>
                 <h3 class="text-xl font-semibold mb-3 text-blue-700">Misi</h3>
-                <div class="prose text-gray-700 leading-relaxed">
-                    {!! $profil->misi ?? '<p>Belum ada misi.</p>' !!}
+                <div class="text-gray-700 leading-relaxed">
+                    @php
+                        $misiText = $profil->misi ?? '';
+                        $misiItems = [];
+                        
+                        if (!empty($misiText)) {
+                            // First try to split by semicolons
+                            if (strpos($misiText, ';') !== false) {
+                                $misiItems = explode(';', $misiText);
+                            } else {
+                                // If no semicolons, split by number pattern (more flexible)
+                                $misiItems = preg_split('/\s*(\d+\.\s*)/', $misiText, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+                                // Re-join the captured numbers with their content
+                                $misiItems = array_chunk($misiItems, 2);
+                                $misiItems = array_map(function($chunk) {
+                                    return isset($chunk[1]) ? $chunk[0] . $chunk[1] : $chunk[0];
+                                }, $misiItems);
+                            }
+                            
+                            $misiItems = array_map(function($item) {
+                                // Remove leading numbers and dots
+                                return preg_replace('/^\d+\.\s*/', '', trim($item));
+                            }, $misiItems);
+                            $misiItems = array_filter($misiItems, function($item) {
+                                return !empty($item) && strlen(trim($item)) > 2; // Reduced filter threshold
+                            });
+                        }
+                    @endphp
+                    
+                    @if(!empty($misiItems))
+                        <ol class="space-y-3">
+                            @foreach($misiItems as $index => $misi)
+                                <li class="flex items-start">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-semibold mr-3 mt-0.5">
+                                        {{ $index + 1 }}
+                                    </span>
+                                    <span class="text-gray-700">{{ $misi }}</span>
+                                </li>
+                            @endforeach
+                        </ol>
+                    @else
+                        <p>Belum ada misi.</p>
+                    @endif
                 </div>
             </div>
         </div>
@@ -59,9 +100,7 @@
                      alt="Struktur Organisasi"
                      class="rounded-lg shadow-md mx-auto w-full max-w-4xl object-contain">
             @else
-                <img src="https://picsum.photos/800/400?random=10" 
-                     alt="Struktur Organisasi"
-                     class="rounded-lg shadow-md mx-auto w-full max-w-4xl object-contain">
+                <p>Belum ada struktur organisasi.</p>
             @endif
         </div>
     </div>
@@ -105,10 +144,55 @@
                 @endforeach
             </div>
         @elseif(!empty($fasilitasText))
-            <!-- Fallback to display as HTML if not JSON -->
-            <div class="prose max-w-none text-gray-700 mx-auto leading-relaxed">
-                {!! $fasilitasText !!}
-            </div>
+            <!-- Fallback to display as list if not JSON -->
+            @php
+                $fasilitasItems = [];
+                
+                // Try to parse as numbered list
+                if (!empty($fasilitasText)) {
+                    // First try to split by semicolons
+                    if (strpos($fasilitasText, ';') !== false) {
+                        $fasilitasItems = explode(';', $fasilitasText);
+                    } else {
+                        // If no semicolons, split by number pattern (more flexible)
+                        $fasilitasItems = preg_split('/\s*(\d+\.\s*)/', $fasilitasText, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+                        // Re-join the captured numbers with their content
+                        $fasilitasItems = array_chunk($fasilitasItems, 2);
+                        $fasilitasItems = array_map(function($chunk) {
+                            return isset($chunk[1]) ? $chunk[0] . $chunk[1] : $chunk[0];
+                        }, $fasilitasItems);
+                    }
+                    
+                    $fasilitasItems = array_map(function($item) {
+                        // Remove leading numbers and dots
+                        return preg_replace('/^\d+\.\s*/', '', trim(strip_tags($item)));
+                    }, $fasilitasItems);
+                    $fasilitasItems = array_filter($fasilitasItems, function($item) {
+                        return !empty($item) && strlen(trim($item)) > 2; // Reduced filter threshold
+                    });
+                }
+            @endphp
+            
+            @if(!empty($fasilitasItems))
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="bg-gray-50 rounded-lg p-6 md:col-span-2 lg:col-span-3">
+                        <ol class="space-y-3">
+                            @foreach($fasilitasItems as $index => $fasilitas)
+                                <li class="flex items-start">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-semibold mr-3 mt-0.5">
+                                        {{ $index + 1 }}
+                                    </span>
+                                    <span class="text-gray-700">{{ $fasilitas }}</span>
+                                </li>
+                            @endforeach
+                        </ol>
+                    </div>
+                </div>
+            @else
+                <div class="prose max-w-none text-gray-700 mx-auto leading-relaxed">
+                    {!! $fasilitasText !!}
+                </div>
+            @endif
         @else
             <p class="text-center text-gray-500">Belum ada data fasilitas kampus.</p>
         @endif

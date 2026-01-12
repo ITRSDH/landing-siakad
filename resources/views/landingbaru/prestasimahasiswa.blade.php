@@ -42,7 +42,7 @@
           <span class="text-xs text-gray-400">{{ $item->tahun ?? $item->year ?? date('Y') }}</span>
         </div>
         <h3 class="text-lg font-medium text-gray-800 mb-1">{{ $item->judul_prestasi ?? $item->title ?? 'Judul tidak tersedia' }}</h3>
-        <p class="text-sm text-gray-600 mb-3">Diraih oleh <span class="font-medium">{{ $item->nama_mahasiswa ?? $item->student_name ?? 'Nama tidak tersedia' }}</span> ({{ $item->program_studi ?? $item->study_program ?? 'Program Studi tidak tersedia' }})</p>
+        <p class="text-sm text-gray-600 mb-3">Diraih oleh <span class="font-medium">{{ $item->nama_mahasiswa ?? $item->student_name ?? 'Nama tidak tersedia' }}</span> ({{ optional($item->prodi)->nama_prodi ?? $item->program_studi ?? $item->study_program ?? 'Program Studi tidak tersedia' }})</p>
         <a href="{{ route('landing.detailprestasi', $item->id) }}" class="text-blue-600 text-sm hover:underline">Detail →</a>
       </div>
     </article>

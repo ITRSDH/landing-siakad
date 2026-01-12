@@ -31,7 +31,7 @@
             <h2 class="text-2xl font-bold text-[#003366] mb-4">Informasi Mahasiswa</h2>
             <ul class="list-disc pl-5 text-gray-600 mb-6 space-y-2">
                 <li>Nama: <span class="font-medium">{{ $prestasi->nama_mahasiswa ?? $prestasi->student_name ?? 'Nama tidak tersedia' }}</span></li>
-                <li>Program Studi: {{ $prestasi->program_studi ?? $prestasi->study_program ?? 'Program Studi tidak tersedia' }}</li>
+                <li>Program Studi: {{ $prestasi->prodi->nama_prodi ?? $prestasi->study_program ?? 'Program Studi tidak tersedia' }}</li>
                 <li>Tahun Prestasi: {{ $prestasi->tahun ?? $prestasi->year ?? 'Tahun tidak tersedia' }}</li>
                 <li>Tingkat: {{ $prestasi->tingkat ?? $prestasi->level ?? 'Tingkat tidak tersedia' }}</li>
             </ul>
