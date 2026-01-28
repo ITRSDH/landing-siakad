@@ -153,26 +153,12 @@ $jumlahMitra = $hero?->jumlah_mitra ?? 0;
     </div>
   </div>
 </section>
-@php
-// Safely decode keunggulan JSON. If missing or invalid, ensure we have an array.
-$keunggalanJson = $hero?->keunggulan ?? '[]';
-$keunggulanItems = json_decode($keunggalanJson, true);
-if (!is_array($keunggulanItems)) {
-  $keunggulanItems = [];
-}
-@endphp
 <!-- Features Section -->
 <section class="py-12 bg-gray-50">
   <div class="container mx-auto px-4">
     <h2 class="text-2xl font-semibold text-center text-gray-700 mb-10">Keunggulan Kami</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      @foreach($keunggulanItems as $item)
-      <div class="bg-white border border-gray-200 rounded-lg p-6 text-center hover:shadow-lg transition duration-300">
-        <img src="{{ asset($item['icon']) }}" class="mx-auto mb-4 w-12 h-12" alt="{{ $item['title'] }}">
-        <h3 class="text-lg font-semibold text-gray-800 mb-2">{{ $item['title'] }}</h3>
-        <p class="text-gray-600">{{ $item['description'] }}</p>
-      </div>
-      @endforeach
+    <div class="bg-white border border-gray-200 rounded-lg p-8 text-center">
+      <p class="text-gray-600 text-lg leading-relaxed">{{ $hero?->keunggulan ?? 'Keunggulan kami akan segera tersedia.' }}</p>
     </div>
   </div>
 </section>

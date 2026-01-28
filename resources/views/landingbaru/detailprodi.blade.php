@@ -174,8 +174,8 @@
 <section
     class="relative bg-gradient-to-r from-[#003366] to-[#00509d] text-white py-20 px-6 rounded-3xl max-w-6xl mx-auto mb-20 text-center flex flex-col items-center justify-center shadow-xl">
     <h2 class="text-3xl md:text-4xl font-bold mb-4">Tertarik dengan Program Studi Ini?</h2>
-    <p class="text-lg max-w-2xl mx-auto opacity-90">Jadilah bagian dari komunitas teknologi dan inovasi kami.</p>
-    <a href="#"
+    <p class="text-lg max-w-2xl mx-auto opacity-90">Jadilah bagian dari komunitas kesehatan dan inovasi kami.</p>
+    <a href="https://pmb.alvion.id"
        class="inline-block bg-yellow-400 text-[#003366] font-semibold px-8 py-3 rounded-full mt-6 shadow-md hover:bg-yellow-500 hover:scale-105 transform transition">
         Daftar Sekarang
     </a>
