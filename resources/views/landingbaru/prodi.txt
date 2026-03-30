@@ -1,0 +1,23 @@
+<!-- News -->
+<!-- Program Studi -->
+<!--<section id="program-studi" class="py-20 bg-gray-50">-->
+<!--  <div class="container mx-auto px-4">-->
+<!--    <h2 class="text-3xl md:text-4xl font-bold mb-12 text-left">Program Studi</h2>-->
+<!--    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">-->
+<!--      @if($prodis)-->
+<!--        @foreach($prodis as $prodi)-->
+<!--        <a href="{{ route('detailprodi.index', ['id' => $prodi['id'] ?? $prodi->id]) }}" class="bg-white rounded-2xl shadow-md border border-gray-100 hover:-translate-y-2 transition-all duration-300 hover:shadow-xl">-->
+<!--          <h3 class="bg-gradient-to-r from-[#003366] to-[#00509d] text-white text-lg font-semibold px-6 py-4 rounded-t-2xl">-->
+<!--            {{ $prodi['nama_prodi'] ?? $prodi->nama_prodi }} ({{ $prodi['kode_prodi'] ?? $prodi->kode_prodi }})-->
+<!--          </h3>-->
+<!--          <p class="p-6 text-gray-600">-->
+<!--            Deskripsi singkat mengenai Program Studi. Menyediakan kurikulum modern dengan dukungan dosen berkualitas.-->
+<!--          </p>-->
+<!--        </a>-->
+<!--        @endforeach-->
+<!--      @else-->
+<!--        <p class="text-gray-600">Tidak ada data Program Studi tersedia saat ini.</p>-->
+<!--      @endif-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</section>-->

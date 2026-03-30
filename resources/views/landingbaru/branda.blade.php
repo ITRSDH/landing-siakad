@@ -59,13 +59,13 @@ $jumlahMitra = $hero?->jumlah_mitra ?? 0;
     <div>
       <h4 class="mb-4 text-xl font-semibold text-gray-800 text-center">Akses Cepat</h4>
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <a href="https://siakad.alvion.id" class="flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition">
+        <a href="https://siakad.dianhusada.ac.id" class="flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition">
           Jadwal Kuliah
         </a>
-        <a href="https://siakad.alvion.id" class="flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition">
+        <a href="https://siakad.dianhusada.ac.id" class="flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition">
           Nilai & Transkrip
         </a>
-        <a href="https://siakad.alvion.id" class="flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition">
+        <a href="https://siakad.dianhusada.ac.id" class="flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition">
           Info Pembayaran
         </a>
       </div>
@@ -163,7 +163,6 @@ $jumlahMitra = $hero?->jumlah_mitra ?? 0;
   </div>
 </section>
 
-<!-- News -->
 <!-- Program Studi -->
 <section id="program-studi" class="py-20 bg-gray-50">
   <div class="container mx-auto px-4">
@@ -186,6 +185,7 @@ $jumlahMitra = $hero?->jumlah_mitra ?? 0;
     </div>
   </div>
 </section>
+
 
 <!-- News Section -->
 <section class="py-12 bg-gray-50">

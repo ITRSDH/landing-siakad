@@ -4,8 +4,8 @@
 
 <!-- Hero Section -->
 <div class="bg-gradient-to-br from-[#003366] to-[#001f4d] text-white text-center py-20 md:py-28 px-4 rounded-b-3xl shadow-lg">
-    <h1 class="text-4xl md:text-5xl font-bold my-3 tracking-wide">Pintasan Akademik</h1>
-    <p class="text-lg opacity-90 max-w-2xl mx-auto">Solusi Elektrikal Modern</p>
+    <h1 class="text-4xl md:text-5xl font-bold my-3 tracking-wide">Akademik</h1>
+    <p class="text-lg opacity-90 max-w-2xl mx-auto">Portal Resmi Layanan Akademik</p>
 </div>
 
 <!-- Program Studi -->
@@ -81,7 +81,7 @@
     class="relative bg-gradient-to-r from-[#003366] to-[#00509d] text-white py-24 px-6 rounded-3xl max-w-6xl mx-auto mb-20 text-center flex flex-col items-center justify-center shadow-xl">
     <h2 class="text-4xl font-bold mb-6">Siap Bergabung dengan Kami?</h2>
     <p class="text-lg max-w-2xl mx-auto opacity-90">Daftar sekarang dan mulai perjalanan akademik Anda bersama kami.</p>
-    <a href="#"
+    <a href="https://pmb.dianhusada.ac.id"
        class="inline-block bg-yellow-400 text-[#003366] font-semibold px-10 py-4 rounded-full mt-8 shadow-md hover:bg-yellow-500 hover:scale-105 transform transition">
         Daftar Sekarang
     </a>

@@ -151,20 +151,20 @@
               <span class="font-semibold text-gray-600">Aplikasi Kampus</span>
             </div>
             <div class="grid grid-cols-3 gap-4 p-4">
-              <a href="https://siakad.alvion.id" class="flex flex-col items-center p-2 rounded-lg hover:bg-gray-50 transition">
+              <a href="https://siakad.dianhusada.ac.id" class="flex flex-col items-center p-2 rounded-lg hover:bg-gray-50 transition">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-blue-500 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path d="M22 9l-10-4-10 4 10 4 10-4v6" />
                   <path d="M6 10.6v5.4a6 3 0 0 0 12 0v-5.4" />
                 </svg>
                 <span class="text-xs font-medium text-gray-600">SIAKAD</span>
               </a>
-              <a href="https://pmb.alvion.id" class="flex flex-col items-center p-2 rounded-lg hover:bg-gray-50 transition">
+              <a href="https://pmb.dianhusada.ac.id" class="flex flex-col items-center p-2 rounded-lg hover:bg-gray-50 transition">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-green-500 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path d="M3 19h18M5 6h14v8H5z" />
                 </svg>
                 <span class="text-xs font-medium text-gray-600">PMB</span>
               </a>
-              <a href="#" class="flex flex-col items-center p-2 rounded-lg hover:bg-gray-50 transition">
+              <a href="http://perpustakaandianhusada.ac.id" class="flex flex-col items-center p-2 rounded-lg hover:bg-gray-50 transition">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-yellow-500 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path d="M5 4h2v16H5zM9 4h2v16H9zM5 8h4M9 16h4M15 4h2v16h-2z" />
                 </svg>
