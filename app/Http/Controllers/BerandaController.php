@@ -18,10 +18,14 @@ use App\Services\GaleriApiService;
 use App\Services\LandingApiService;
 use App\Services\OrmawaApiService;
 use App\Services\PengumumanApiService;
+use App\Services\PmbPendaftaranApiService;
 use App\Services\PrestasiApiService;
 use App\Services\ProdiApiService;
 use App\Services\ProfilApiService;
+use App\Services\ProfileDosenApiService;
+use App\Services\SertifikatAkreditasiApiService;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -575,11 +579,14 @@ class BerandaController extends Controller
         return view('landingbaru.kalender');
     }
 
-    public function kampus(ProfilApiService $profilService, GaleriApiService $galeriService)
+    public function kampus(ProfilApiService $profilService, GaleriApiService $galeriService, ProfileDosenApiService $profileDosenService)
     {
         // Coba ambil data profil kampus dari API terlebih dahulu
         // Gunakan getActiveProfilKampus() untuk mendapatkan profil yang sedang aktif
         $apiProfilData = $profilService->getActiveProfilKampus();
+        $apiProfileDosenData = $profileDosenService->getAllProfileDosenLimit();
+
+        $profileDosen = [];
 
         if ($apiProfilData !== null) {
             // Jika API berhasil, gunakan data dari API
@@ -589,6 +596,16 @@ class BerandaController extends Controller
             // Fallback ke database jika API gagal
             Log::info('Using database fallback for Profil Kampus data');
             $profil = ProfilKampus::first();
+        }
+
+        if ($apiProfileDosenData !== null) {
+            // Jika API berhasil
+            $profileDosen = $apiProfileDosenData;
+            Log::info('Using API data for Profile Dosen');
+        } else {
+            // Fallback ke database jika API gagal
+            Log::info('Using database fallback for Profile Dosen data');
+            // $profileDosen = ProfileDosen::first();
         }
 
         // Untuk galeri, coba ambil dari API dulu, fallback ke database
@@ -605,7 +622,141 @@ class BerandaController extends Controller
         }
 
         // Kirim data ke view
-        return view('landingbaru.kampus', compact('profil', 'galeris'));
+        return view('landingbaru.kampus', compact('profil', 'galeris', 'profileDosen'));
+    }
+
+    public function profileDosen(Request $request, ProfileDosenApiService $profileDosenService)
+    {
+        $currentPage = (int) $request->get('page', 1);
+        $perPage = 9;
+
+        $profileDosen = collect();
+        $apiProfileDosen = $profileDosenService->getAllProfileDosen();
+
+        if ($apiProfileDosen !== null) {
+            $profileDosen = collect($apiProfileDosen);
+            Log::info('Using API data for Profile Dosen page', [
+                'count' => $profileDosen->count(),
+            ]);
+        } else {
+            Log::info('Using empty fallback for Profile Dosen page (API failed)');
+        }
+
+        $total = $profileDosen->count();
+        $offset = max(0, ($currentPage - 1) * $perPage);
+        $items = $profileDosen->slice($offset, $perPage)->values();
+
+        $profileDosenPaginated = new LengthAwarePaginator($items, $total, $perPage, $currentPage, [
+            'path' => route('landing.profiledosen'),
+            'pageName' => 'page',
+            'query' => $request->query(),
+        ]);
+
+        return view('landingbaru.profile_dosen', [
+            'profileDosen' => $profileDosenPaginated,
+        ]);
+    }
+
+    public function detailProfileDosen($id, ProfileDosenApiService $profileDosenService)
+    {
+        $prodi = collect();
+        $dosen = null;
+        $apiResponse = $profileDosenService->getProfileDosenById($id);
+
+        if ($apiResponse !== null) {
+            if (is_array($apiResponse)) {
+                $dosen = $apiResponse['dosen'] ?? null;
+                $prodi = collect($apiResponse['prodi'] ?? []);
+            } elseif (is_object($apiResponse)) {
+                $dosen = $apiResponse->dosen ?? null;
+                $prodi = collect($apiResponse->prodi ?? []);
+            }
+
+            Log::info('Using API data for Profile Dosen detail', [
+                'id' => $id,
+                'has_dosen' => $dosen !== null,
+                'prodi_count' => $prodi->count(),
+            ]);
+        } else {
+            Log::info('Using empty fallback for Profile Dosen detail (API failed)', [
+                'id' => $id,
+            ]);
+        }
+
+        return view('landingbaru.profile_dosen_detail', compact('prodi', 'dosen'));
+    }
+
+    public function sertifikatAkreditasi(Request $request, SertifikatAkreditasiApiService $sertifikatAkreditasiService)
+    {
+        $currentPage = (int) $request->get('page', 1);
+        $perPage = 9;
+
+        $sertifikat = collect();
+        $apiSertifikat = $sertifikatAkreditasiService->getAllSertifikatAkreditasi();
+
+        if ($apiSertifikat !== null) {
+            $sertifikat = is_array($apiSertifikat) ? collect($apiSertifikat) : $apiSertifikat;
+            Log::info('Using API data for Sertifikat Akreditasi page', [
+                'count' => $sertifikat->count(),
+            ]);
+        } else {
+            Log::info('Using empty fallback for Sertifikat Akreditasi page (API failed)');
+        }
+
+        $total = $sertifikat->count();
+        $offset = max(0, ($currentPage - 1) * $perPage);
+        $items = $sertifikat->slice($offset, $perPage)->values();
+
+        $sertifikatPaginated = new LengthAwarePaginator($items, $total, $perPage, $currentPage, [
+            'path' => route('landing.sertifikat_akreditasi'),
+            'pageName' => 'page',
+            'query' => $request->query(),
+        ]);
+
+        return view('landingbaru.sertifikat_akreditasi', [
+            'sertifikatAkreditasi' => $sertifikatPaginated,
+        ]);
+    }
+
+    public function detailSertifikatAkreditasi($id, SertifikatAkreditasiApiService $sertifikatAkreditasiService)
+    {
+        $sertifikat = null;
+        $apiData = $sertifikatAkreditasiService->getSertifikatAkreditasiById($id);
+
+        if ($apiData !== null) {
+            $sertifikat = $apiData;
+            Log::info('Using API data for Sertifikat Akreditasi detail', [
+                'id' => $id,
+            ]);
+        } else {
+            Log::info('Using empty fallback for Sertifikat Akreditasi detail (API failed)', [
+                'id' => $id,
+            ]);
+        }
+
+        return view('landingbaru.sertifikat_akreditasi_detail', compact('sertifikat'));
+    }
+
+    public function pmbPendaftaran(PmbPendaftaranApiService $pmbPendaftaranService)
+    {
+        // Coba ambil data profil kampus dari API terlebih dahulu
+        // Gunakan getActiveProfilKampus() untuk mendapatkan profil yang sedang aktif
+        $apiPmbPendaftaranData = $pmbPendaftaranService->getPmbPendaftaran();
+
+        $pmbPendaftaran = [];
+
+        if ($apiPmbPendaftaranData !== null) {
+            // Jika API berhasil, gunakan data dari API
+            $pmbPendaftaran = $apiPmbPendaftaranData;
+            Log::info('Using API data for Pmb Pendaftaran');
+        } else {
+            // Fallback ke database jika API gagal
+            Log::info('Using database fallback for Pmb Pendaftaran data');
+            $pmbPendaftaran = null;
+        }
+
+        // Kirim data ke view
+        return view('landingbaru.pmb_pendaftaran', compact('pmbPendaftaran'));
     }
 
     public function testHomepageApiConnections(GaleriApiService $galeriService, BeritaApiService $beritaService, PengumumanApiService $pengumumanService, LandingApiService $landingService)

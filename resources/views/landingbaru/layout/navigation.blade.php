@@ -27,6 +27,7 @@
           <div x-show="open" x-transition class="absolute left-0 mt-1 w-56 bg-white shadow-lg rounded-lg border border-gray-200">
             <a href="/programstudibaru" class="block px-4 py-2 text-gray-600 hover:bg-gray-50">Program Studi</a>
             <a href="/kalender-akademikbaru" class="block px-4 py-2 text-gray-600 hover:bg-gray-50">Kalender Akademik</a>
+            <a href="{{route('landing.sertifikat_akreditasi')}}" class="block px-4 py-2 text-gray-600 hover:bg-gray-50">Sertifikat Akreditasi</a>
           </div>
         </li>
 
@@ -71,10 +72,15 @@
           <div x-show="open" x-transition class="absolute left-0 mt-1 w-56 bg-white shadow-lg rounded-lg border border-gray-200">
             <a href="/kampusbaru#profil" class="block px-4 py-2 text-gray-600 hover:bg-gray-50">Profil</a>
             <a href="/kampusbaru#visi-misi" class="block px-4 py-2 text-gray-600 hover:bg-gray-50">Visi & Misi</a>
-            <a href="/kampusbaru#struktur-organisasi" class="block px-4 py-2 text-gray-600 hover:bg-gray-50">Struktur Organisasi</a>
+            <a href="/kampusbaru#profile-dosen" class="block px-4 py-2 text-gray-600 hover:bg-gray-50">Profile Dosen</a>
             <a href="/kampusbaru#fasilitas" class="block px-4 py-2 text-gray-600 hover:bg-gray-50">Fasilitas</a>
             <a href="/kampusbaru#galeri" class="block px-4 py-2 text-gray-600 hover:bg-gray-50">Galeri</a>
           </div>
+        </li>
+
+        {{-- Pmb Pendaftaran --}}
+        <li>
+          <a href="{{ route('landing.pmb_pendaftaran') }}" class="desktop-link nav-link text-white hover:text-blue-500 font-medium">PMB Pendaftaran</a>
         </li>
 
         <!-- Kontak -->
@@ -176,8 +182,9 @@
           </button>
         </div>
       </div>
-
     </div>
+
+    {{-- Navbar Mobile --}}
     <div id="mobile-menu" class="hidden md:hidden bg-white text-gray-700 border-t border-gray-200">
       <ul class="flex flex-col p-4 space-y-2">
         <!-- Beranda -->
@@ -194,6 +201,7 @@
           <div x-show="open" x-transition class="pl-4 mt-1 space-y-1">
             <a href="/programstudibaru" class="block py-1 px-2 hover:bg-gray-50 rounded">Program Studi</a>
             <a href="/kalender-akademikbaru" class="block py-1 px-2 hover:bg-gray-50 rounded">Kalender Akademik</a>
+            <a href="{{ route('landing.sertifikat_akreditasi') }}" class="block py-1 px-2 hover:bg-gray-50 rounded">Sertifikat Akreditasi</a>
           </div>
         </li>
 
@@ -238,10 +246,15 @@
           <div x-show="open" x-transition class="pl-4 mt-1 space-y-1">
             <a href="/kampusbaru#profil" class="block py-1 px-2 hover:bg-gray-50 rounded">Profil</a>
             <a href="/kampusbaru#visi-misi" class="block py-1 px-2 hover:bg-gray-50 rounded">Visi & Misi</a>
-            <a href="/kampusbaru#struktur-organisasi" class="block py-1 px-2 hover:bg-gray-50 rounded">Struktur Organisasi</a>
+            <a href="/kampusbaru#profile-dosen" class="block py-1 px-2 hover:bg-gray-50 rounded">Profile Dosen</a>
             <a href="/kampusbaru#fasilitas" class="block py-1 px-2 hover:bg-gray-50 rounded">Fasilitas</a>
             <a href="/kampusbaru#galeri" class="block py-1 px-2 hover:bg-gray-50 rounded">Galeri</a>
           </div>
+        </li>
+
+        {{-- Pmb Pendaftaran --}}
+        <li>
+          <a href="{{ route('landing.pmb_pendaftaran') }}" class="block py-2 px-4 hover:bg-gray-100 rounded">PMB Pendaftaran</a>
         </li>
 
         <!-- Kontak -->

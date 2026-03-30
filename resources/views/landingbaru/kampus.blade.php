@@ -90,19 +90,62 @@
     </div>
 </section>
 
-<!-- Struktur Organisasi -->
-<section class="py-16 bg-gray-50" id="struktur-organisasi">
-    <div class="container mx-auto px-4 text-center">
-        <h2 class="text-3xl font-semibold mb-6 text-gray-800">Struktur Organisasi</h2>
-        <div class="bg-white p-6 rounded-lg shadow-md inline-block">
-            @if(!empty($profil->struktur_image) || !empty($profil->struktur_foto))
-                <img src="{{ config('app.api_storage') . ($profil->struktur_image ?? $profil->struktur_foto) }}" 
-                     alt="Struktur Organisasi"
-                     class="rounded-lg shadow-md mx-auto w-full max-w-4xl object-contain">
-            @else
-                <p>Belum ada struktur organisasi.</p>
-            @endif
+<!-- Profile Dosen -->
+<section class="py-16 bg-gray-50" id="profile-dosen">
+    <div class="container mx-auto px-4">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+            <h2 class="text-3xl font-semibold text-gray-800 text-center sm:text-left">Profile Dosen</h2>
+            <div class="text-center sm:text-right">
+                <a href="{{ route('landing.profiledosen') }}" class="inline-flex items-center justify-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                    Lihat Semua Dosen
+                </a>
+            </div>
         </div>
+        @if(!empty($profileDosen) && count($profileDosen) > 0)
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
+                @foreach($profileDosen as $dosenRaw)
+                    @php
+                        $dosen = ensure_profile_dosen_object($dosenRaw);
+                        $foto = $dosen->foto ?? null;
+                        $nama = $dosen->nama ?? '-';
+                        $nidn = $dosen->nidn ?? null;
+                        $prodi = $dosen->program_studi ?? ($dosen->prodi->nama_prodi ?? null);
+                    @endphp
+
+                    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition duration-300">
+                        <div class="p-6">
+                            <div class="flex items-center gap-4">
+                                <div class="w-16 h-16 rounded-full overflow-hidden bg-gray-100 flex-shrink-0">
+                                    @if(!empty($foto))
+                                        <img src="{{ config('app.api_storage') . $foto }}" alt="{{ $nama }}" class="w-full h-full object-cover">
+                                    @else
+                                        <div class="w-full h-full flex items-center justify-center text-gray-400 text-sm">No Photo</div>
+                                    @endif
+                                </div>
+
+                                <div class="min-w-0">
+                                    <h3 class="font-semibold text-gray-800 truncate">{{ $nama }}</h3>
+                                    @if(!empty($nidn))
+                                        <p class="text-sm text-gray-500">NIDN: {{ $nidn }}</p>
+                                    @endif
+                                    @if(!empty($prodi))
+                                        <p class="text-sm text-blue-700">{{ $prodi }}</p>
+                                    @endif
+                                </div>
+                            </div>
+
+                            @if(!empty($dosen->biografi))
+                                <p class="text-sm text-gray-600 mt-4 leading-relaxed">
+                                    {!! \Illuminate\Support\Str::limit(strip_tags($dosen->biografi), 140) !!}
+                                </p>
+                            @endif
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @else
+            <p class="text-center text-gray-500">Belum ada data dosen.</p>
+        @endif
     </div>
 </section>
 

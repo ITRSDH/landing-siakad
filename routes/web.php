@@ -39,6 +39,11 @@ Route::get('/beritabaru', [BerandaController::class, 'berita'])->name('landing.b
 Route::get('/kalender-akademikbaru', [BerandaController::class, 'kalender'])->name('kalender.index');
 Route::get('/galeribaru', [BerandaController::class, 'galeri'])->name('landing.galeri.index');
 Route::get('/kampusbaru', [BerandaController::class, 'kampus'])->name('kampus.index');
+Route::get('/profile-dosen', [BerandaController::class, 'profileDosen'])->name('landing.profiledosen');
+Route::get('/profile-dosen/{id}', [BerandaController::class, 'detailProfileDosen'])->name('landing.profiledosen.detail');
+Route::get('/sertifikat-akreditasi', [BerandaController::class, 'sertifikatAkreditasi'])->name('landing.sertifikat_akreditasi');
+Route::get('/sertifikat-akreditasi/{id}', [BerandaController::class, 'detailSertifikatAkreditasi'])->name('landing.sertifikat_akreditasi.detail');
+Route::get('/pmb-pendaftaran', [BerandaController::class, 'pmbPendaftaran'])->name('landing.pmb_pendaftaran');
 Route::get('/test-kampus-connection', [BerandaController::class, 'testKampusConnection'])->name('test.kampus.connection');
 Route::get('/test-kampus/{id}', [BerandaController::class, 'testKampusById'])->name('test.kampus.byid');
 
