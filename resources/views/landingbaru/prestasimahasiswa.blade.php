@@ -47,14 +47,39 @@
       </div>
     </article>
     @endforeach
-
   </div>
-
-  @if(method_exists($prestasis, 'links'))
-    <div class="mt-10">
-        {{ $prestasis->links() }}
+  
+     <div class="mt-12 flex justify-center">
+        <div class="flex items-center gap-4 bg-white px-6 py-3 rounded-xl shadow-sm border">
+    
+            {{-- Info --}}
+            <span class="text-sm text-gray-600">
+                Page <span class="font-semibold">{{ $prestasis->currentPage() }}</span> 
+                of <span class="font-semibold">{{ $prestasis->lastPage() }}</span>
+            </span>
+    
+            {{-- Divider --}}
+            <div class="w-px h-5 bg-gray-300"></div>
+    
+            {{-- Buttons --}}
+            <div class="flex items-center gap-2">
+                @if ($prestasis->previousPageUrl())
+                    <a href="{{ $prestasis->previousPageUrl() }}" 
+                       class="px-3 py-1.5 text-sm border rounded-lg hover:bg-gray-100 transition">
+                        ← Prev
+                    </a>
+                @endif
+    
+                @if ($prestasis->nextPageUrl())
+                    <a href="{{ $prestasis->nextPageUrl() }}" 
+                       class="px-3 py-1.5 text-sm border rounded-lg hover:bg-gray-100 transition">
+                        Next →
+                    </a>
+                @endif
+            </div>
+    
+        </div>
     </div>
-  @endif
 </section>
 
 @endsection

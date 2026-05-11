@@ -37,11 +37,15 @@
         </li>
         <li class="flex items-center gap-3">
           <span class="text-blue-500 text-xl">📞</span>
-          <span>+62 812-3456-7890</span>
+          <span>+6281 333616271</span>
+        </li>
+        <li class="flex items-center gap-3">
+          <span class="text-blue-500 text-xl">📞</span>
+          <span>+6281 388583669</span>
         </li>
         <li class="flex items-center gap-3">
           <span class="text-blue-500 text-xl">📧</span>
-          <span>info@universitasmasadepan.ac.id</span>
+          <span>dianhusada@gmail.com</span>
         </li>
         <li class="flex items-center gap-3">
           <span class="text-blue-500 text-xl">⏰</span>

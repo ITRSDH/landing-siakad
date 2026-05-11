@@ -287,7 +287,7 @@ class BerandaController extends Controller
                 ]);
             } else {
                 // API berhasil tapi tanpa pagination, buat manual
-                $perPage = 9;
+                $perPage = 12;
                 $total = $apiData['items']->count();
                 $offset = ($currentPage - 1) * $perPage;
                 $items = $apiData['items']->slice($offset, $perPage)->values();

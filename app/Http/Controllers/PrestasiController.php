@@ -55,7 +55,7 @@ class PrestasiController extends Controller
             'nama_mahasiswa' => 'required|string|max:255',
             'program_studi' => 'nullable|string|max:255',
             'judul_prestasi' => 'required|string|max:255',
-            'tingkat' => 'required|string|in:kampus,nasional,internasional',
+            'tingkat' => 'required|string|in:regional,kampus,nasional,internasional',
             'tahun' => 'required|digits:4',
             'deskripsi' => 'nullable|string',
             'gambar' => 'nullable|image|max:2048',

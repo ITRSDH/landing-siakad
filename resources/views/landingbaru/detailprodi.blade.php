@@ -150,7 +150,7 @@
                     <li>Terwujudnya jiwa entrepreneur kesehatan dan mampu menangani masalah keperawatan gawat darurat</li>
                 </ul>
             </div>
-        @elseif(isset($prodi['nama_prodi']) && $prodi['nama_prodi'] == 'Radiologi Pencitraan')
+        @elseif(isset($prodi['nama_prodi']) && $prodi['nama_prodi'] == 'Teknologi Radiologi Pencitraan')
             <div class="mt-4">
                 <h4 class="text-xl font-semibold text-[#003366] mb-4">Visi</h4>
                 <p class="text-lg text-gray-600">Menjadikan Teknologi Radiologi Pencitraan Yang Unggul dalam Optimalisasi Teknik Radiologi Imejing Diagnostic Berfokus Pada Quality Control Dan Keselamatan Pasien (Patient Safety) Dipelayanan Kesehatan Serta Berjiwa Entrepreneur Tahun 2030</p>

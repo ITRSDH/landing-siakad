@@ -16,11 +16,11 @@
       <p class="text-xl mb-8">{{ $hero?->hero_subtitle ?? 'Subjudul Default' }}</p>
      
       <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-        <a href="#contact"
+        <a href="{{ route('kontak.index') }}"
           class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition duration-300 transform hover:scale-105">
           Hubungi Kami
         </a>
-        <a href="https://pmb.alvion.id"
+        <a href="https://pmb.dianhusada.ac.id"
           class="bg-transparent border-2 border-white hover:bg-white hover:text-blue-900 text-white font-bold py-3 px-8 rounded-lg transition duration-300">
           Daftar
         </a>
@@ -36,7 +36,7 @@ $jumlahMitra = $hero?->jumlah_mitra ?? 0;
 @endphp
 <div class="container relative  mb-12 mx-auto px-4">
   <div class="bg-white rounded-xl p-8 border border-gray-200 mt-12">
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center mb-8">
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-6 text-center mb-8">
       <div>
         <div class="achievement-counter text-3xl font-bold text-gray-800">{{ $jumlahProgram }}</div>
         <div class="text-gray-500">Program Studi</div>
@@ -48,10 +48,6 @@ $jumlahMitra = $hero?->jumlah_mitra ?? 0;
       <div>
         <div class="achievement-counter text-3xl font-bold text-gray-800">{{ $jumlahDosen }}</div>
         <div class="text-gray-500">Dosen Berkualitas</div>
-      </div>
-      <div>
-        <div class="achievement-counter text-3xl font-bold text-gray-800">{{ $jumlahMitra }}</div>
-        <div class="text-gray-500">Mitra Industri</div>
       </div>
     </div>
 
@@ -157,8 +153,17 @@ $jumlahMitra = $hero?->jumlah_mitra ?? 0;
 <section class="py-12 bg-gray-50">
   <div class="container mx-auto px-4">
     <h2 class="text-2xl font-semibold text-center text-gray-700 mb-10">Keunggulan Kami</h2>
-    <div class="bg-white border border-gray-200 rounded-lg p-8 text-center">
-      <p class="text-gray-600 text-lg leading-relaxed">{{ $hero?->keunggulan ?? 'Keunggulan kami akan segera tersedia.' }}</p>
+    @php
+      $text = $hero?->keunggulan ?? '';
+      $paragraphs = preg_split('/(?<=[.?!])\s+/', $text);
+    @endphp
+
+    <div class="bg-white border border-gray-200 rounded-lg p-8 text-left">
+      @foreach ($paragraphs as $p)
+        <p class="text-gray-600 text-lg leading-relaxed mb-4">
+          {{ $p }}
+        </p>
+      @endforeach
     </div>
   </div>
 </section>
@@ -370,7 +375,7 @@ $jumlahMitra = $hero?->jumlah_mitra ?? 0;
       <h2 class="text-2xl md:text-3xl font-bold mb-2">Siap Bergabung dengan Kami?</h2>
       <p>Daftar sekarang dan mulai perjalanan akademik Anda bersama kami.</p>
     </div>
-    <a href="https://pmb.alvion.id" class="bg-white text-blue-600 font-semibold px-6 py-3 rounded-lg hover:bg-gray-100 transition">
+    <a href="https://pmb.dianhusada.ac.id" class="bg-white text-blue-600 font-semibold px-6 py-3 rounded-lg hover:bg-gray-100 transition">
       Daftar Sekarang
     </a>
   </div>

@@ -17,7 +17,7 @@
 <!-- Filter -->
 <section class="py-10 bg-gray-50">
   <div class="container mx-auto px-4">
-    <form method="GET" action="{{ route('galeri.index') }}" class="bg-white border border-gray-200 rounded-xl p-6 flex flex-col md:flex-row md:items-end md:space-x-4 space-y-4 md:space-y-0">
+    <form method="GET" action="{{ route('landing.galeri.index') }}" class="bg-white border border-gray-200 rounded-xl p-6 flex flex-col md:flex-row md:items-end md:space-x-4 space-y-4 md:space-y-0">
       <input type="text" name="search" placeholder="Cari galeri..." value="{{ request('search') }}" class="border border-gray-200 p-2 rounded-lg flex-1 focus:ring-1 focus:ring-blue-500">
     
       <select name="sort" class="border border-gray-200 p-2 rounded-lg focus:ring-1 focus:ring-blue-500">

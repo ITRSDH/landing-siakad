@@ -47,7 +47,7 @@ class PrestasiApiService
                             'pagination' => [
                                 'current_page' => $data['data']['current_page'] ?? 1,
                                 'total' => $data['data']['total'] ?? 0,
-                                'per_page' => $data['data']['per_page'] ?? 10,
+                                'per_page' => $data['data']['per_page'] ?? 9,
                                 'last_page' => $data['data']['last_page'] ?? 1,
                                 'from' => $data['data']['from'] ?? null,
                                 'to' => $data['data']['to'] ?? null,

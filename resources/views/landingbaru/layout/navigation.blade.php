@@ -60,6 +60,21 @@
             <a href="/galeribaru" class="block px-4 py-2 text-gray-600 hover:bg-gray-50">Galeri</a>
           </div>
         </li>
+        
+        <!-- Lembaga -->
+        <li class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
+          <button class="desktop-button flex items-center space-x-1 text-white hover:text-blue-500 font-medium">
+            <span>Lembaga</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div x-show="open" x-transition class="absolute left-0 mt-1 w-56 bg-white shadow-lg rounded-lg border border-gray-200">
+            <a href="#" class="block px-4 py-2 text-gray-600 hover:bg-gray-50">SPMI</a>
+            <a href="#" class="block px-4 py-2 text-gray-600 hover:bg-gray-50">LPPM</a>
+            <a href="#" class="block px-4 py-2 text-gray-600 hover:bg-gray-50">Sentra HAKI</a>
+          </div>
+        </li>
 
         <!-- Institusi -->
         <li class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
@@ -232,6 +247,21 @@
             <a href="/pengumumanbaru" class="block py-1 px-2 hover:bg-gray-50 rounded">Pengumuman</a>
             <a href="/beritabaru" class="block py-1 px-2 hover:bg-gray-50 rounded">Berita Kampus</a>
             <a href="/galeribaru" class="block py-1 px-2 hover:bg-gray-50 rounded">Galeri</a>
+          </div>
+        </li>
+        
+        <!--Lembaga-->
+        <li x-data="{ open: false }">
+          <button @click="open = !open" class="w-full flex justify-between items-center py-2 px-4 hover:bg-gray-100 rounded">
+            Lembaga
+            <svg :class="{'rotate-180': open}" class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div x-show="open" x-transition class="pl-4 mt-1 space-y-1">
+            <a href="#" class="block py-1 px-2 hover:bg-gray-50 rounded">SPMI</a>
+            <a href="#" class="block py-1 px-2 hover:bg-gray-50 rounded">LPPM</a>
+            <a href="#" class="block py-1 px-2 hover:bg-gray-50 rounded">Sentra HAKI</a>
           </div>
         </li>
 
