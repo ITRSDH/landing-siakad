@@ -70,8 +70,8 @@
             </svg>
           </button>
           <div x-show="open" x-transition class="absolute left-0 mt-1 w-56 bg-white shadow-lg rounded-lg border border-gray-200">
-            <a href="#" class="block px-4 py-2 text-gray-600 hover:bg-gray-50">SPMI</a>
-            <a href="#" class="block px-4 py-2 text-gray-600 hover:bg-gray-50">LPPM</a>
+            <a href="https://spmi.dianhusada.ac.id" class="block px-4 py-2 text-gray-600 hover:bg-gray-50">SPMI</a>
+            <a href="http://lppm.dianhusada.ac.id" class="block px-4 py-2 text-gray-600 hover:bg-gray-50">LPPM</a>
             <a href="#" class="block px-4 py-2 text-gray-600 hover:bg-gray-50">Sentra HAKI</a>
           </div>
         </li>
@@ -185,6 +185,13 @@
                 </svg>
                 <span class="text-xs font-medium text-gray-600">Perpustakaan</span>
               </a>
+              <a href="https://cbtexam.dianhusada.ac.id/" class="flex flex-col items-center p-2 rounded-lg hover:bg-gray-50 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                <span class="text-xs font-medium text-gray-600">CBT Exam</span>
+              </a>
             </div>
           </div>
         </div>
@@ -259,8 +266,8 @@
             </svg>
           </button>
           <div x-show="open" x-transition class="pl-4 mt-1 space-y-1">
-            <a href="#" class="block py-1 px-2 hover:bg-gray-50 rounded">SPMI</a>
-            <a href="#" class="block py-1 px-2 hover:bg-gray-50 rounded">LPPM</a>
+            <a href="https://spmi.dianhusada.ac.id" class="block py-1 px-2 hover:bg-gray-50 rounded">SPMI</a>
+            <a href="http://lppm.dianhusada.ac.id" class="block py-1 px-2 hover:bg-gray-50 rounded">LPPM</a>
             <a href="#" class="block py-1 px-2 hover:bg-gray-50 rounded">Sentra HAKI</a>
           </div>
         </li>
