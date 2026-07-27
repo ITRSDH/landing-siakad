@@ -3,10 +3,15 @@
 @section('content')
 
 @php
-    $item = isset($sertifikat) ? ensure_sertifikat_akreditasi_object($sertifikat) : null;
-    $judul = $item->nama ?? $item->name ?? 'Sertifikat Akreditasi';
-    $deskripsi = $item->deskripsi ?? $item->description ?? null;
-    $foto = $item->foto_sertifikat ?? $item->gambar ?? $item->logo ?? null;
+    $item = isset($sertifikat) 
+        ? ensure_sertifikat_akreditasi_object($sertifikat) 
+        : null;
+
+    $judul = $item->nama ?? 'Sertifikat Akreditasi';
+
+    $deskripsi = $item->deskripsi ?? null;
+
+    $fotos = $item->fotos ?? [];
 @endphp
 
 <section class="relative bg-cover bg-center text-white py-20 md:py-28"
@@ -30,11 +35,19 @@
         <div class="max-w-5xl mx-auto">
             <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
                 <div class="relative">
-                    {{-- @if(!empty($foto)) --}}
-                        <img src="{{ config('app.api_storage') . $foto }}" alt="{{ $judul }}" class="w-full h-80 md:h-[28rem] object-contain bg-gray-50">
-                    {{-- @else
-                        <div class="w-full h-80 md:h-[28rem] bg-gray-100 flex items-center justify-center text-gray-400 text-sm">No Image</div>
-                    @endif --}}
+                    @if(count($fotos) > 0)
+                        @foreach($fotos as $foto)
+                            <img 
+                                src="{{ config('app.api_storage') . $foto->foto }}"
+                                alt="{{ $judul }}"
+                                class="w-full h-80 md:h-[28rem] object-contain bg-gray-50 mb-4"
+                            >
+                        @endforeach
+                    @else
+                        <div class="w-full h-80 md:h-[28rem] bg-gray-100 flex items-center justify-center text-gray-400 text-sm">
+                            No Image
+                        </div>
+                    @endif
                 </div>
 
                 <div class="p-6 md:p-8">

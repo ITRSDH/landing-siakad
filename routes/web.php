@@ -15,6 +15,7 @@ use App\Http\Controllers\ProfileKampusController;
 use App\Models\Profilekampus;
 use App\Http\Controllers\ProfilController;
 use App\Http\Controllers\ProfilKampusController;
+use App\Http\Controllers\MaintenanceController;
 
 
 
@@ -46,7 +47,6 @@ Route::get('/sertifikat-akreditasi/{id}', [BerandaController::class, 'detailSert
 Route::get('/pmb-pendaftaran', [BerandaController::class, 'pmbPendaftaran'])->name('landing.pmb_pendaftaran');
 Route::get('/test-kampus-connection', [BerandaController::class, 'testKampusConnection'])->name('test.kampus.connection');
 Route::get('/test-kampus/{id}', [BerandaController::class, 'testKampusById'])->name('test.kampus.byid');
-
 
 Route::get('/dashboard', function () {
     return view('dashboard');

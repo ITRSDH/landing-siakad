@@ -27,19 +27,28 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @forelse($sertifikatAkreditasi as $itemRaw)
-                @php
+               @php
                     $item = ensure_sertifikat_akreditasi_object($itemRaw);
-                    $judul = $item->nama ?? $item->name ?? 'Sertifikat';
-                    $deskripsi = $item->deskripsi ?? $item->description ?? null;
-                    $foto = $item->foto_sertifikat ?? $item->gambar ?? $item->logo ?? null;
+                
+                    $judul = $item->nama ?? 'Sertifikat';
+                
+                    $deskripsi = $item->deskripsi ?? null;
+                
+                    $foto = $item->fotos[0]->foto ?? null;
                 @endphp
 
                 <div class="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition duration-300">
                     <div class="relative">
-                        @if(!empty($foto))
-                            <img src="{{ config('app.api_storage') . $foto }}" alt="{{ $judul }}" class="w-full h-48 object-cover">
+                       @if(!empty($foto))
+                            <img 
+                                src="{{ config('app.api_storage') . $foto }}"
+                                alt="{{ $judul }}"
+                                class="w-full h-48 object-cover"
+                            >
                         @else
-                            <div class="w-full h-48 bg-gray-100 flex items-center justify-center text-gray-400 text-sm">No Image</div>
+                            <div class="w-full h-48 bg-gray-100 flex items-center justify-center text-gray-400 text-sm">
+                                No Image
+                            </div>
                         @endif
                     </div>
                     <div class="p-6">

@@ -690,51 +690,63 @@ class BerandaController extends Controller
     {
         $currentPage = (int) $request->get('page', 1);
         $perPage = 9;
-
-        $sertifikat = collect();
-        $apiSertifikat = $sertifikatAkreditasiService->getAllSertifikatAkreditasi();
-
-        if ($apiSertifikat !== null) {
-            $sertifikat = is_array($apiSertifikat) ? collect($apiSertifikat) : $apiSertifikat;
-            Log::info('Using API data for Sertifikat Akreditasi page', [
-                'count' => $sertifikat->count(),
-            ]);
-        } else {
-            Log::info('Using empty fallback for Sertifikat Akreditasi page (API failed)');
-        }
-
+        $sertifikat = $sertifikatAkreditasiService
+            ->getAllSertifikatAkreditasi();
+    
+    
+        Log::info('Load Sertifikat Akreditasi', [
+            'count' => $sertifikat->count()
+        ]);
+    
+    
         $total = $sertifikat->count();
-        $offset = max(0, ($currentPage - 1) * $perPage);
-        $items = $sertifikat->slice($offset, $perPage)->values();
-
-        $sertifikatPaginated = new LengthAwarePaginator($items, $total, $perPage, $currentPage, [
-            'path' => route('landing.sertifikat_akreditasi'),
-            'pageName' => 'page',
-            'query' => $request->query(),
-        ]);
-
-        return view('landingbaru.sertifikat_akreditasi', [
-            'sertifikatAkreditasi' => $sertifikatPaginated,
-        ]);
+    
+        $offset = ($currentPage - 1) * $perPage;
+    
+        $items = $sertifikat
+            ->slice($offset, $perPage)
+            ->values();
+    
+    
+        $sertifikatPaginated = new LengthAwarePaginator(
+            $items,
+            $total,
+            $perPage,
+            $currentPage,
+            [
+                'path' => route('landing.sertifikat_akreditasi'),
+                'pageName' => 'page',
+                'query' => $request->query(),
+            ]
+        );
+    
+        return view(
+            'landingbaru.sertifikat_akreditasi',
+            [
+                'sertifikatAkreditasi' =>
+                    $sertifikatPaginated
+            ]
+        );
     }
 
     public function detailSertifikatAkreditasi($id, SertifikatAkreditasiApiService $sertifikatAkreditasiService)
     {
-        $sertifikat = null;
-        $apiData = $sertifikatAkreditasiService->getSertifikatAkreditasiById($id);
-
-        if ($apiData !== null) {
-            $sertifikat = $apiData;
-            Log::info('Using API data for Sertifikat Akreditasi detail', [
-                'id' => $id,
-            ]);
-        } else {
-            Log::info('Using empty fallback for Sertifikat Akreditasi detail (API failed)', [
-                'id' => $id,
-            ]);
+    
+        $sertifikat =
+            $sertifikatAkreditasiService
+                ->getSertifikatAkreditasiById($id);
+    
+        if(!$sertifikat){
+    
+            abort(404);
+    
         }
-
-        return view('landingbaru.sertifikat_akreditasi_detail', compact('sertifikat'));
+    
+        return view(
+            'landingbaru.sertifikat_akreditasi_detail',
+            compact('sertifikat')
+        );
+    
     }
 
     public function pmbPendaftaran(PmbPendaftaranApiService $pmbPendaftaranService)
